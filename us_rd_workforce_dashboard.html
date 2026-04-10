@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U.S. Advanced R&D Workforce — Reshoring Reality Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0c0f;
+    --bg2: #111418;
+    --bg3: #181c22;
+    --bg4: #1f2530;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8eaed;
+    --text2: #9aa0aa;
+    --text3: #5a6170;
+    --blue: #4d9fff;
+    --blue-dim: rgba(77,159,255,0.12);
+    --teal: #2dd4a0;
+    --teal-dim: rgba(45,212,160,0.12);
+    --amber: #f5a623;
+    --amber-dim: rgba(245,166,35,0.12);
+    --red: #ff5a5a;
+    --red-dim: rgba(255,90,90,0.12);
+    --green: #5dd67a;
+    --green-dim: rgba(93,214,122,0.10);
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-sans: 'IBM Plex Sans', sans-serif;
+    --font-cond: 'IBM Plex Sans Condensed', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    border-bottom: 1px solid var(--border2);
+    padding: 28px 40px 24px;
+    background: var(--bg2);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--teal), var(--amber), var(--red));
+  }
+  .header-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: var(--font-cond);
+    font-size: clamp(22px, 4vw, 38px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .header h1 span { color: var(--red); }
+  .header-sub {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 700px;
+    line-height: 1.65;
+  }
+  .header-meta {
+    margin-top: 16px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .header-meta-item {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+  }
+  .header-meta-item span { color: var(--text2); }
+
+  /* ── TABS ── */
+  .tab-wrap {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text2); }
+  .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+  /* ── PANELS ── */
+  .panel { display: none; padding: 36px 40px 60px; }
+  .panel.active { display: block; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── FUNNEL ── */
+  .funnel-row {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeIn 0.4s ease both;
+  }
+  .funnel-row:last-child { border-bottom: none; }
+
+  .funnel-left { position: relative; }
+  .funnel-track {
+    height: 36px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .funnel-fill {
+    height: 100%;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+  }
+  .funnel-fill-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .funnel-right {}
+  .funnel-title {
+    font-family: var(--font-cond);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .funnel-number {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  .funnel-desc {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.6;
+    max-width: 560px;
+  }
+  .funnel-pct {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 5px;
+  }
+
+  .alert-box {
+    margin-top: 28px;
+    border: 1px solid rgba(255,90,90,0.3);
+    background: rgba(255,90,90,0.06);
+    border-radius: 4px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .alert-icon {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+  .alert-text {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+  .alert-text strong { color: var(--red); font-weight: 500; }
+
+  /* ── R&D TABLE ── */
+  .rd-intro {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.7;
+    max-width: 680px;
+    margin-bottom: 28px;
+  }
+
+  .rd-table { width: 100%; border-collapse: collapse; }
+  .rd-table thead tr {
+    border-bottom: 1px solid var(--border2);
+  }
+  .rd-table thead th {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text3);
+    font-weight: 400;
+    padding: 0 14px 12px 0;
+    text-align: left;
+  }
+  .rd-table thead th:last-child { padding-right: 0; }
+  .rd-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    animation: fadeIn 0.35s ease both;
+  }
+  .rd-table tbody tr:hover { background: var(--bg3); }
+  .rd-table tbody tr:last-child { border-bottom: none; }
+  .rd-table td {
+    padding: 16px 14px 16px 0;
+    vertical-align: top;
+  }
+  .rd-table td:last-child { padding-right: 0; }
+
+  .rd-field { font-weight: 500; color: var(--text); font-size: 16px; }
+  .rd-sub { font-size: 11px; color: var(--text3); margin-top: 3px; font-family: var(--font-mono); }
+
+  .rd-num {
+    font-family: var(--font-mono);
+    font-size: 17px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .rd-phd {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+  .rd-gap-text {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.65;
+    max-width: 340px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .b-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,90,90,0.25); }
+  .b-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,166,35,0.25); }
+  .b-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(93,214,122,0.2); }
+  .b-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(77,159,255,0.2); }
+
+  /* bar sparklines in table */
+  .mini-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .mini-bar-track { width: 80px; height: 6px; background: var(--bg4); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .mini-bar-fill { height: 100%; border-radius: 2px; }
+
+  /* ── RISK PANEL ── */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .risk-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 20px;
+    transition: border-color 0.2s;
+    animation: fadeIn 0.4s ease both;
+  }
+  .risk-card:hover { border-color: var(--border2); }
+  .risk-card-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .risk-card-val {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .risk-card-note {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .risk-narrative { max-width: 820px; }
+  .risk-block {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeIn 0.4s ease both;
+  }
+  .risk-block:last-child { border-bottom: none; }
+  .risk-block-title {
+    font-family: var(--font-cond);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .risk-block-title::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .risk-block.v .risk-block-title::before { background: var(--red); }
+  .risk-block.s .risk-block-title::before { background: var(--amber); }
+  .risk-block.k .risk-block-title::before { background: var(--blue); }
+  .risk-block-body {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.8;
+    padding-left: 18px;
+  }
+  .risk-block-body strong { color: var(--text); font-weight: 500; }
+
+  /* ── BOTTOM VERDICT ── */
+  .verdict {
+    margin-top: 48px;
+    border: 1px solid rgba(255,90,90,0.2);
+    background: linear-gradient(135deg, rgba(255,90,90,0.04), rgba(245,166,35,0.04));
+    border-radius: 6px;
+    padding: 28px 32px;
+    max-width: 820px;
+  }
+  .verdict-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .verdict-text {
+    font-size: 17px;
+    color: var(--text);
+    line-height: 1.85;
+    font-weight: 300;
+  }
+  .verdict-text strong { color: var(--amber); font-weight: 500; }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 12px;
+  }
+  .footer-left {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    line-height: 1.7;
+  }
+  .footer-right {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes growBar {
+    from { width: 0 !important; }
+  }
+
+  .panel.active .funnel-fill { animation: growBar 1.4s cubic-bezier(0.16,1,0.3,1) both; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .header, .tab-wrap, .panel, .footer { padding-left: 20px; padding-right: 20px; }
+    .funnel-row { grid-template-columns: 1fr; gap: 10px; }
+    .rd-table thead th:nth-child(3),
+    .rd-table td:nth-child(3) { display: none; }
+    .tab-btn { padding: 14px 12px; font-size: 10px; }
+    .risk-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .risk-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-eyebrow">Policy Intelligence Brief // Workforce Analysis</div>
+  <h1>U.S. Advanced R&D Workforce<br><span>Reshoring Reality Check</span></h1>
+  <p class="header-sub">From 168 million active workers to the narrow band of frontier researchers actually capable of driving industrial reshoring — and why the gap is far larger than most policy discussions acknowledge.</p>
+  <div class="header-meta">
+    <div class="header-meta-item">Sources: <span>NSF NCSES · BLS · U.S. Census Bureau · USGS · SIA</span></div>
+    <div class="header-meta-item">Data year: <span>2024–2025</span></div>
+    <div class="header-meta-item">Generated: <span>April 2026</span></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-wrap">
+  <button class="tab-btn active" onclick="switchTab('funnel', this)">01 — Workforce Funnel</button>
+  <button class="tab-btn" onclick="switchTab('rd', this)">02 — R&D by Field</button>
+  <button class="tab-btn" onclick="switchTab('risk', this)">03 — Hidden Risk Factors</button>
+</div>
+
+<!-- PANEL 1: FUNNEL -->
+<div id="funnel" class="panel active">
+  <div class="section-label">Starting point: 168M active workers → frontier R&D innovators in reshoring-critical fields</div>
+
+  <!-- Row 1 -->
+  <div class="funnel-row" style="animation-delay:0.05s">
+    <div class="funnel-left">
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:100%; background:linear-gradient(90deg,#1a3a5c,#1e4a72);">
+          <span class="funnel-fill-label" style="color:#4d9fff;">168,000,000</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-right">
+      <div class="funnel-title">Active U.S. Workforce</div>
+      <div class="funnel-number" style="color:var(--blue);">168 million</div>
+      <div class="funnel-desc">All employed workers across every sector and education level. Represents ~61% labor force participation of the working-age population.</div>
+      <div class="funnel-pct">// baseline · 100%</div>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="funnel-row" style="animation-delay:0.12s">
+    <div class="funnel-left">
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:74%; background:linear-gradient(90deg,#0d3d30,#135940);">
+          <span class="funnel-fill-label" style="color:var(--teal);">75,000,000</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-right">
+      <div class="funnel-title">Bachelor's Degree or Higher</div>
+      <div class="funnel-number" style="color:var(--teal);">~75 million</div>
+      <div class="funnel-desc">44.5% of employed workers. Spans all fields — business, law, arts, medicine, social sciences, and STEM. Most are not doing industrial R&D.</div>
+      <div class="funnel-pct">// ↓ 44.5% of workforce</div>
+    </div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="funnel-row" style="animation-delay:0.19s">
+    <div class="funnel-left">
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:36%; background:linear-gradient(90deg,#0d3d30,#0a5040);">
+          <span class="funnel-fill-label" style="color:var(--teal);">36.8M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-right">
+      <div class="funnel-title">STEM Workforce (All Levels)</div>
+      <div class="funnel-number" style="color:var(--teal);">~36.8 million</div>
+      <div class="funnel-desc">Includes all STEM workers regardless of degree. <strong style="color:var(--amber);">52% do not hold a bachelor's degree</strong> — these are skilled technical workers: machinists, technicians, operators. Essential, but not R&D innovators.</div>
+      <div class="funnel-pct">// 24% of total workforce — half without bachelor's</div>
+    </div>
+  </div>
+
+  <!-- Row 4 -->
+  <div class="funnel-row" style="animation-delay:0.26s">
+    <div class="funnel-left">
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:52%; background:linear-gradient(90deg,#2a2000,#3d3000);">
+          <span class="funnel-fill-label" style="color:var(--amber);">17.5M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-right">
+      <div class="funnel-title">STEM Workers with Bachelor's+</div>
+      <div class="funnel-number" style="color:var(--amber);">~17.5 million</div>
+      <div class="funnel-desc">Core science and engineering degree holders. Includes software engineers, biomedical workers, data scientists. The broadest meaningful STEM talent pool — but heavily weighted toward software, not industrial manufacturing.</div>
+      <div class="funnel-pct">// 10.4% of total workforce</div>
+    </div>
+  </div>
+
+  <!-- Row 5 -->
+  <div class="funnel-row" style="animation-delay:0.33s">
+    <div class="funnel-left">
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:36%; background:linear-gradient(90deg,#2a1a00,#3d2800);">
+          <span class="funnel-fill-label" style="color:var(--amber);">9.4M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-right">
+      <div class="funnel-title">Core S&E Occupations</div>
+      <div class="funnel-number" style="color:var(--amber);">~9.4 million</div>
+      <div class="funnel-desc">Scientists and engineers actually working in S&E jobs. The majority (~4M+) are in software and computing. Far smaller numbers in physical sciences, materials, chemistry, and manufacturing engineering.</div>
+      <div class="funnel-pct">// 5.6% of total workforce</div>
+    </div>
+  </div>
+
+  <!-- Row 6 -->
+  <div class="funnel-row" style="animation-delay:0.4s">
+    <div class="funnel-left">
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:22%; background:linear-gradient(90deg,#2a0a0a,#3d1010);">
+          <span class="funnel-fill-label" style="color:var(--red);">4–5M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-right">
+      <div class="funnel-title">STEM Master's Degree Holders</div>
+      <div class="funnel-number" style="color:var(--red);">~4–5 million</div>
+      <div class="funnel-desc">Total master's holders: 25.3M. STEM-specific: ~16–20% of that pool. Many enter industry roles, not R&D. Business analytics and CS master's holders are included but rarely do frontier industrial research.</div>
+      <div class="funnel-pct">// ~2.5% of workforce</div>
+    </div>
+  </div>
+
+  <!-- Row 7 -->
+  <div class="funnel-row" style="animation-delay:0.47s">
+    <div class="funnel-left">
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:10%; background:linear-gradient(90deg,#2a0505,#4a0808);">
+          <span class="funnel-fill-label" style="color:var(--red); font-size:10px;">1.2M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-right">
+      <div class="funnel-title">Active STEM PhDs in R&D Roles</div>
+      <div class="funnel-number" style="color:var(--red);">~1.2–1.5 million</div>
+      <div class="funnel-desc">Total doctorate holders: 8.5M (includes MD, JD, EdD). Pure research S&E PhDs: ~4.2M. Of those, only ~30% are in active R&D roles. The rest teach, manage, or work in non-research industry positions.</div>
+      <div class="funnel-pct">// &lt;1% of total workforce</div>
+    </div>
+  </div>
+
+  <!-- Row 8 — FINAL -->
+  <div class="funnel-row" style="animation-delay:0.54s; border-bottom: 2px solid var(--red);">
+    <div class="funnel-left">
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:3%; background:var(--red); min-width:32px;">
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--red);margin-top:5px;letter-spacing:0.08em;">0.12–0.21% of workforce</div>
+    </div>
+    <div class="funnel-right">
+      <div class="funnel-title">Frontier R&D Innovators — Reshoring-Critical Fields</div>
+      <div class="funnel-number" style="color:var(--red);">~200,000–350,000</div>
+      <div class="funnel-desc">Researchers and engineers actively pushing the frontier in semiconductors, battery chemistry, rare earth processing, pharmaceutical synthesis, critical minerals, shipbuilding, and advanced manufacturing. <strong style="color:var(--text);">This is the actual innovation engine for reshoring.</strong></div>
+      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="badge b-red">Critical bottleneck</span>
+        <span class="badge b-amber">40–45% foreign-born</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert-box">
+    <div class="alert-icon">⚠ ALERT</div>
+    <div class="alert-text">Of the ~200,000–350,000 frontier R&D innovators in reshoring-critical fields, approximately <strong>40–45% are foreign-born</strong> — many on temporary visas. If immigration policy tightens simultaneously with decoupling, this pool does not refill with native-born talent. It collapses. The domestic replacement pipeline is <strong>8–15 years long</strong> from investment to working researcher.</div>
+  </div>
+</div>
+
+<!-- PANEL 2: R&D BY FIELD -->
+<div id="rd" class="panel">
+  <div class="section-label">Estimated active frontier researchers per reshoring priority area</div>
+  <p class="rd-intro">These are the people doing actual innovation — not operators, not technicians, not managers. The researchers whose work determines whether a domestic industry can be built from scratch. The numbers are small. The gaps are structural.</p>
+
+  <table class="rd-table">
+    <thead>
+      <tr>
+        <th style="width:28%">Field</th>
+        <th style="width:16%">Est. active researchers</th>
+        <th style="width:12%">Annual new PhDs</th>
+        <th>Key structural gap</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="animation-delay:0.05s">
+        <td>
+          <div class="rd-field">Semiconductors &amp; chip design</div>
+          <div class="rd-sub">EE, microelectronics, photolithography</div>
+          <span class="badge b-amber">Thin</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~45,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:72%;background:var(--amber);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~3,800/yr</div></td>
+        <td><div class="rd-gap-text">~45% are foreign-born. TSMC's Arizona fab has already struggled to find enough US-trained process engineers despite billions in investment. The expertise gap is worse than the headcount gap.</div></td>
+      </tr>
+      <tr style="animation-delay:0.10s">
+        <td>
+          <div class="rd-field">Battery &amp; energy storage</div>
+          <div class="rd-sub">Electrochemistry, materials, cell design</div>
+          <span class="badge b-amber">Thin</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~18,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:29%;background:var(--amber);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~1,200/yr</div></td>
+        <td><div class="rd-gap-text">Field growing fast but started near zero. Most cell manufacturing expertise is in Asia. US is building a pipeline, but it lags industrial demand by 8–12 years minimum.</div></td>
+      </tr>
+      <tr style="animation-delay:0.15s">
+        <td>
+          <div class="rd-field">Pharmaceuticals &amp; API synthesis</div>
+          <div class="rd-sub">Medicinal chemistry, pharmacology, bioprocess</div>
+          <span class="badge b-green">Moderate</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--green);">~75,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--green);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~4,200/yr</div></td>
+        <td><div class="rd-gap-text">Stronger pipeline than most — but concentrated in drug discovery, not manufacturing process chemistry. The factory-floor expertise is thin and largely offshore. Different skill than inventing a drug.</div></td>
+      </tr>
+      <tr style="animation-delay:0.20s">
+        <td>
+          <div class="rd-field">Rare earth processing</div>
+          <div class="rd-sub">Metallurgy, hydrometallurgy, separation chemistry</div>
+          <span class="badge b-red">Critical gap</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--red);">~5,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:7%;background:var(--red);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~280/yr</div></td>
+        <td><div class="rd-gap-text"><strong style="color:var(--red);">Most dangerous gap.</strong> The US stopped training rare earth processing specialists when Mountain Pass closed in 2002. China has 20+ years of compounding institutional knowledge lead that cannot be recovered from a textbook.</div></td>
+      </tr>
+      <tr style="animation-delay:0.25s">
+        <td>
+          <div class="rd-field">Critical minerals &amp; mining engineering</div>
+          <div class="rd-sub">Mining eng., geochemistry, mineral processing</div>
+          <span class="badge b-red">Critical gap</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--red);">~4,500</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:6%;background:var(--red);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~350/yr</div></td>
+        <td><div class="rd-gap-text">Mining engineering programs have been closing for decades. The US graduates fewer than 400 mining engineers per year nationally — for an industry that needs thousands to achieve any meaningful domestic capacity.</div></td>
+      </tr>
+      <tr style="animation-delay:0.30s">
+        <td>
+          <div class="rd-field">Materials science (advanced)</div>
+          <div class="rd-sub">Functional materials, composites, coatings</div>
+          <span class="badge b-amber">Thin</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~22,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:35%;background:var(--amber);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~1,600/yr</div></td>
+        <td><div class="rd-gap-text">Strong academic base but weak industry pipeline. Most graduates go into academia or non-manufacturing sectors. Defense and industrial materials R&D competes poorly on compensation against software.</div></td>
+      </tr>
+      <tr style="animation-delay:0.35s">
+        <td>
+          <div class="rd-field">Chemical engineering (industrial)</div>
+          <div class="rd-sub">Process engineering, refining, synthesis scale-up</div>
+          <span class="badge b-amber">Thin</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~38,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:61%;background:var(--amber);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~2,700/yr</div></td>
+        <td><div class="rd-gap-text">Decent pipeline but heavily skewed toward oil/gas and biotech. Industrial process chemistry for manufacturing — the exact expertise reshoring demands — is a dying specialty.</div></td>
+      </tr>
+      <tr style="animation-delay:0.40s">
+        <td>
+          <div class="rd-field">Nuclear engineering</div>
+          <div class="rd-sub">Reactor design, nuclear materials, safety systems</div>
+          <span class="badge b-amber">Thin</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~9,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:14%;background:var(--amber);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~550/yr</div></td>
+        <td><div class="rd-gap-text">Small but relatively stable. New SMR buildout will stress this significantly. Current graduate rates cannot keep pace with projected demand if the nuclear renaissance accelerates as hoped.</div></td>
+      </tr>
+      <tr style="animation-delay:0.45s">
+        <td>
+          <div class="rd-field">Shipbuilding &amp; naval architecture</div>
+          <div class="rd-sub">Marine engineering, hull design, propulsion</div>
+          <span class="badge b-red">Critical gap</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--red);">~3,200</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:4%;background:var(--red);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~220/yr</div></td>
+        <td><div class="rd-gap-text">Only 3 accredited naval architecture programs remain in the US. The industry is so hollowed out that expertise has literally retired out of existence in several specialty areas. China builds ~50% of global commercial tonnage.</div></td>
+      </tr>
+      <tr style="animation-delay:0.50s">
+        <td>
+          <div class="rd-field">Solar &amp; clean energy hardware</div>
+          <div class="rd-sub">Photovoltaics, power electronics, grid tech</div>
+          <span class="badge b-amber">Thin</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~14,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:22%;background:var(--amber);"></div></div></div>
+        </td>
+        <td><div class="rd-phd">~950/yr</div></td>
+        <td><div class="rd-gap-text">Solar cell manufacturing R&D is nearly nonexistent domestically. US expertise concentrates in installation and software, not fabrication. Most PV manufacturing PhDs were trained in Asia or Europe.</div></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="verdict" style="margin-top:36px;">
+    <div class="verdict-eyebrow">// Bottom line — R&D field assessment</div>
+    <div class="verdict-text">
+      Of the ten critical reshoring areas, <strong>three have catastrophic researcher gaps</strong> (rare earths, mining, shipbuilding) where the knowledge base has literally retired out of existence, <strong>six have thin but recoverable pipelines</strong> that would require 10–15 years of sustained investment to scale, and <strong>one — pharmaceuticals — has a moderate foundation</strong> that could be built upon within a decade if process manufacturing expertise receives targeted investment. None are ready now. None could be made ready within a single presidential term.
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 3: HIDDEN RISK FACTORS -->
+<div id="risk" class="panel">
+  <div class="section-label">Structural vulnerabilities that compound the raw talent shortage</div>
+
+  <div class="risk-grid">
+    <div class="risk-card" style="animation-delay:0.05s; border-color:rgba(255,90,90,0.2);">
+      <div class="risk-card-label">Foreign-born share of S&E PhDs<br>in active US workforce</div>
+      <div class="risk-card-val" style="color:var(--red);">~45%</div>
+      <div class="risk-card-note">Nearly half the frontier R&D workforce was born abroad. Tighten immigration; it collapses.</div>
+    </div>
+    <div class="risk-card" style="animation-delay:0.10s; border-color:rgba(255,90,90,0.2);">
+      <div class="risk-card-label">Foreign nationals earning US<br>doctoral degrees (2025)</div>
+      <div class="risk-card-val" style="color:var(--red);">12%</div>
+      <div class="risk-card-note">Significant share of the incoming PhD pipeline is non-resident. Visa restrictions don't just reduce talent — they redirect it to competitor nations.</div>
+    </div>
+    <div class="risk-card" style="animation-delay:0.15s; border-color:rgba(245,166,35,0.2);">
+      <div class="risk-card-label">US rank in math —<br>PISA global assessment</div>
+      <div class="risk-card-val" style="color:var(--amber);">34th / 80</div>
+      <div class="risk-card-note">The K–12 pipeline feeding STEM is globally mediocre. This is the original sin — everything downstream reflects it.</div>
+    </div>
+    <div class="risk-card" style="animation-delay:0.20s; border-color:rgba(245,166,35,0.2);">
+      <div class="risk-card-label">High school graduates<br>ready for college STEM</div>
+      <div class="risk-card-val" style="color:var(--amber);">~20%</div>
+      <div class="risk-card-note">Only 1 in 5 high school graduates are prepared for college-level STEM coursework. The funnel leaks badly at the very beginning.</div>
+    </div>
+    <div class="risk-card" style="animation-delay:0.25s; border-color:rgba(255,90,90,0.2);">
+      <div class="risk-card-label">Mining engineers<br>graduated annually</div>
+      <div class="risk-card-val" style="color:var(--red);">&lt;400</div>
+      <div class="risk-card-note">For an industry that needs thousands to reshore critical mineral capacity. Programs have been closing for decades.</div>
+    </div>
+    <div class="risk-card" style="animation-delay:0.30s; border-color:rgba(245,166,35,0.2);">
+      <div class="risk-card-label">STEM graduate<br>underemployment rate</div>
+      <div class="risk-card-val" style="color:var(--amber);">42.5%</div>
+      <div class="risk-card-note">Nearly half of recent STEM graduates work in jobs that don't use their degree. The problem isn't only supply — it's also misallocation.</div>
+    </div>
+  </div>
+
+  <div class="risk-narrative">
+    <div class="risk-block v" style="animation-delay:0.05s">
+      <div class="risk-block-title">The visa trap</div>
+      <div class="risk-block-body">The US built its frontier R&D workforce substantially on foreign talent — graduate students, postdocs, H-1B holders. If immigration policy tightens at the same moment decoupling creates demand for more domestic talent, the pipeline does not automatically fill with native-born Americans. <strong>It collapses.</strong> The domestic replacement pipeline runs 8–15 years from K–12 investment to working researcher. You cannot vote to replace it on a two-year election cycle. Countries that are restricting immigration while simultaneously trying to reshore are creating a scissors crisis — cutting supply precisely when demand is rising. China, South Korea, and Germany are all actively recruiting the researchers the US is making unwelcome.</div>
+    </div>
+    <div class="risk-block s" style="animation-delay:0.12s">
+      <div class="risk-block-title">The salary competition problem</div>
+      <div class="risk-block-body">The best STEM PhDs in the US go to software, AI, and data science because compensation is <strong>2–3x higher</strong> than industrial manufacturing R&D. A semiconductor process engineer earns $140–180K. A comparably skilled machine learning engineer at a major tech firm earns $250–400K. Reshoring requires that gap to close significantly — or the talent will not move into chips, mining, or shipbuilding regardless of how many programs are funded. You can subsidize the factory. You cannot easily subsidize away a $200K salary gap. Until industrial R&D compensation becomes competitive, training more people is partially futile: you train them for manufacturing and they go work in tech.</div>
+    </div>
+    <div class="risk-block k" style="animation-delay:0.19s">
+      <div class="risk-block-title">Institutional knowledge cannot be recreated quickly</div>
+      <div class="risk-block-body">Rare earth processing, shipbuilding, and specialty metallurgy are crafts as much as sciences. When Mountain Pass closed in 2002, the community of practice that knew how to run it <strong>dispersed and largely retired.</strong> That knowledge lives in the heads of people who are no longer working, not in textbooks or patents. China has been compounding that institutional advantage for 20+ years — training cohort after cohort of specialists, building tacit knowledge that accumulates at the bench level, not in academic papers. No amount of investment can shortcut the time required to rebuild a living community of practice. The honest answer for rare earths, specialty metallurgy, and shipbuilding is that meaningful domestic capacity is a <strong>25–35 year project</strong> under the most favorable conditions imaginable.</div>
+    </div>
+    <div class="risk-block v" style="animation-delay:0.26s">
+      <div class="risk-block-title">The sequencing problem — disruption before capacity</div>
+      <div class="risk-block-body">The single most dangerous element of the current policy trajectory is <strong>sequence.</strong> Successful industrial transition requires building domestic capacity first, then transitioning off foreign supply chains — not the reverse. What is happening now is the opposite: supply chains are being disrupted through tariffs and decoupling before domestic replacements exist. This creates a window of maximal vulnerability where the US has neither the old supply chain nor the new one. That window could last a decade or more. During that window, adversaries who control the disrupted supply chains have direct leverage over US industrial output, defense readiness, and consumer welfare — which is precisely what 2025's rare earth and legacy chip export restrictions demonstrated in real time.</div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-eyebrow">// Unequivocal bottom line</div>
+    <div class="verdict-text">
+      The US has world-class knowledge institutions but a <strong>dangerously thin industrial application workforce</strong> in exactly the fields reshoring demands most. The talent shortage is real, structural, and multi-decade in depth. It cannot be resolved by tariffs, by executive order, or within any single administration's timeline. The only realistic path runs through <strong>sustained K–12 STEM investment, open immigration for critical talent, allied supply chain cooperation as a bridge to domestic capacity, and patient decades-long industrial policy</strong> insulated from electoral cycles. Attempting full domestic self-sufficiency is not a strategic option — it is a fantasy that would require environmental sacrifice, population that doesn't exist, and timelines that span generations. The evidence points overwhelmingly toward managed interdependence with strategic redundancy, not autarky.
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-left">
+    Sources: NSF National Center for Science &amp; Engineering Statistics (NCSES) · U.S. Bureau of Labor Statistics ·<br>
+    U.S. Census Bureau Educational Attainment 2024 · USGS Mineral Commodity Summaries 2025–26 ·<br>
+    Semiconductor Industry Association Workforce Blueprint 2024 · Reshoring Initiative 2025
+  </div>
+  <div class="footer-right">
+    Generated via Claude (Anthropic) · April 2026<br>
+    For informational and policy discussion purposes
+  </div>
+</div>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+
+<style>
+.rsn{position:fixed;bottom:0;left:0;right:0;height:50px;background:rgba(4,4,6,0.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,0.09);display:flex;align-items:center;padding:0 22px;z-index:9999;gap:10px;font-family:"JetBrains Mono","Fira Code","IBM Plex Mono",monospace;}
+.rsn *{box-sizing:border-box;}
+.rsn a{text-decoration:none;transition:opacity 0.15s;}
+.rsn a:hover{opacity:0.55;}
+.rsn-left,.rsn-right{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+.rsn-right{justify-content:flex-end;}
+.rsn-home{font-size:17px;color:rgba(255,255,255,0.28);flex-shrink:0;}
+.rsn-arr{font-size: 17px;color:rgba(255,255,255,0.28);flex-shrink:0;}
+.rsn-lbl{font-size:10px;color:rgba(255,255,255,0.36);letter-spacing:0.07em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rsn-mid{display:flex;align-items:center;gap:9px;flex-shrink:0;position:relative;padding-top:4px;}
+.rsn-series{font-size:8px;color:rgba(255,255,255,0.15);letter-spacing:0.2em;text-transform:uppercase;position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none;}
+.rsn-d{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.16);display:block;transition:background 0.2s,transform 0.2s;flex-shrink:0;}
+.rsn-d:hover{background:rgba(255,255,255,0.5)!important;}
+.rsn-d.on{background:#fff!important;transform:scale(1.5);}
+</style>
+
+<div style="height:58px"></div>
+<nav class="rsn" aria-label="Series navigation">
+  <a href="index.html" class="rsn-home" title="Series home">&#8962;</a>
+  <div class="rsn-left"><a href="index.html" class="rsn-arr">&#8592;</a><a href="index.html" class="rsn-lbl">Series Index</a></div>
+  <div class="rsn-mid">
+    <span class="rsn-series">The Reshoring Reality</span>
+    <a href="us_rd_workforce_dashboard.html" class="rsn-d on" title="1 · U.S. R&D Workforce"></a><a href="china_rd_workforce.html" class="rsn-d" title="2 · China R&D Workforce"></a><a href="allied_network_dashboard.html" class="rsn-d" title="3 · Allied Supply Web"></a><a href="reshoring_decisions.html" class="rsn-d" title="4 · Reshoring Decisions"></a><a href="reshoring_executive_summary.html" class="rsn-d" title="5 · Executive Summary"></a><a href="alabama_reshoring.html" class="rsn-d" title="6 · Alabama's Moment"></a>
+  </div>
+  <div class="rsn-right"><a href="china_rd_workforce.html" class="rsn-lbl">China R&D Workforce</a><a href="china_rd_workforce.html" class="rsn-arr">&#8594;</a></div>
+</nav>
+</body>
+</html>

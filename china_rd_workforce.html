@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>China Advanced R&D Workforce — The Mirror Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0c0a09;
+  --bg2:     #141210;
+  --bg3:     #1c1916;
+  --bg4:     #252118;
+  --border:  rgba(255,220,150,0.07);
+  --border2: rgba(255,220,150,0.14);
+  --text:    #f0e8d8;
+  --text2:   #a09080;
+  --text3:   #5a5040;
+
+  --gold:    #d4a017;
+  --gold2:   #b8880e;
+  --gold-bg: rgba(212,160,23,0.10);
+  --gold-border: rgba(212,160,23,0.25);
+
+  --red:     #c0392b;
+  --red2:    #9b2119;
+  --red-bg:  rgba(192,57,43,0.12);
+  --red-border: rgba(192,57,43,0.28);
+
+  --amber:   #c97b2a;
+  --amber-bg: rgba(201,123,42,0.12);
+  --amber-border: rgba(201,123,42,0.28);
+
+  --green:   #2e7d52;
+  --green-bg: rgba(46,125,82,0.12);
+  --green-border: rgba(46,125,82,0.25);
+
+  --blue:    #2a5a8a;
+  --blue-bg: rgba(42,90,138,0.12);
+  --blue-border: rgba(42,90,138,0.25);
+
+  --font-display: 'Noto Serif SC', 'Georgia', serif;
+  --font-body:    'IBM Plex Sans', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border2);
+  padding: 32px 44px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red) 0%, var(--gold) 40%, var(--red) 70%, var(--gold) 100%);
+}
+.header::after {
+  content: '中';
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: 160px;
+  font-weight: 900;
+  color: rgba(192,57,43,0.06);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.ph-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--gold2);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.ph-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+.ph-title em { font-style: normal; color: var(--gold); }
+.ph-sub {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 680px;
+  line-height: 1.75;
+  margin-bottom: 18px;
+}
+.compare-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  border-radius: 3px;
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #e07060;
+  letter-spacing: 0.06em;
+  margin-bottom: 18px;
+}
+.compare-banner strong { color: #ff9080; }
+.ph-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.phm { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+.phm span { color: var(--text2); }
+
+/* ── TABS ── */
+.tab-wrap {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 44px;
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow-x: auto;
+}
+.tab-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 15px 18px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── PANELS ── */
+.panel { display: none; padding: 36px 44px 64px; }
+.panel.active { display: block; }
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── FUNNEL ── */
+.funnel-row {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  animation: fadeIn 0.4s ease both;
+}
+.funnel-row:last-child { border-bottom: none; }
+
+.funnel-track {
+  height: 34px;
+  background: var(--bg3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.funnel-fill {
+  height: 100%;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  animation: growBar 1.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes growBar {
+  from { width: 0 !important; }
+}
+.fill-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.funnel-info {}
+.f-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.f-num {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.f-desc { font-size: 14px; color: var(--text2); line-height: 1.6; max-width: 540px; }
+.f-pct { font-family: var(--font-mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+/* us comparison pill */
+.us-compare {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-top: 5px;
+  letter-spacing: 0.06em;
+}
+
+.alert-box {
+  margin-top: 28px;
+  border: 1px solid rgba(212,160,23,0.3);
+  background: rgba(212,160,23,0.06);
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.alert-icon { font-family: var(--font-mono); font-size: 11px; color: var(--gold2); letter-spacing: 0.08em; white-space: nowrap; padding-top: 2px; }
+.alert-text { font-size: 15px; color: var(--text2); line-height: 1.7; }
+.alert-text strong { color: var(--gold); font-weight: 500; }
+
+/* ── R&D TABLE ── */
+.rd-intro { font-size: 15px; color: var(--text2); line-height: 1.7; max-width: 700px; margin-bottom: 28px; }
+.rd-table { width: 100%; border-collapse: collapse; }
+.rd-table thead tr { border-bottom: 1px solid var(--border2); }
+.rd-table thead th {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 400;
+  padding: 0 14px 12px 0;
+  text-align: left;
+}
+.rd-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  animation: fadeIn 0.35s ease both;
+}
+.rd-table tbody tr:hover { background: var(--bg3); }
+.rd-table tbody tr:last-child { border-bottom: none; }
+.rd-table td { padding: 14px 14px 14px 0; vertical-align: top; }
+
+.rd-field { font-weight: 500; color: var(--text); font-size: 16px; }
+.rd-sub { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--font-mono); }
+.rd-num { font-family: var(--font-mono); font-size: 18px; font-weight: 500; white-space: nowrap; }
+.rd-vs-us { font-family: var(--font-mono); font-size: 10px; white-space: nowrap; margin-top: 3px; }
+.rd-gap-text { font-size: 14px; color: var(--text2); line-height: 1.65; max-width: 360px; }
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+.b-dom  { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
+.b-lead { background: var(--gold-bg);  color: var(--gold2); border: 1px solid var(--gold-border); }
+.b-comp { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.b-lag  { background: var(--blue-bg);  color: #6090c0; border: 1px solid var(--blue-border); }
+
+/* mini bar */
+.mini-bar-wrap { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.mini-bar-track { width: 80px; height: 6px; background: var(--bg4); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+.mini-bar-fill { height: 100%; border-radius: 2px; }
+
+/* ── RISK PANEL ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 36px;
+}
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 18px;
+  animation: fadeIn 0.4s ease both;
+}
+.stat-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; line-height: 1.5; }
+.stat-val { font-family: var(--font-mono); font-size: 26px; font-weight: 500; margin-bottom: 6px; }
+.stat-note { font-size: 14px; color: var(--text2); line-height: 1.6; }
+
+.risk-block {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  animation: fadeIn 0.4s ease both;
+  max-width: 820px;
+}
+.risk-block:last-child { border-bottom: none; }
+.risk-block-title {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.risk-block-title::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.risk-block.demo .risk-block-title::before { background: var(--red); }
+.risk-block.qual .risk-block-title::before { background: var(--gold); }
+.risk-block.deco .risk-block-title::before { background: var(--amber); }
+.risk-block.inno .risk-block-title::before { background: var(--blue); }
+.risk-block-body { font-size: 15px; color: var(--text2); line-height: 1.8; padding-left: 18px; }
+.risk-block-body strong { color: var(--text); font-weight: 500; }
+.risk-block-body em { color: var(--gold); font-style: normal; font-weight: 500; }
+
+/* ── VERDICT ── */
+.verdict {
+  margin-top: 40px;
+  border: 1px solid var(--gold-border);
+  background: rgba(212,160,23,0.04);
+  border-radius: 4px;
+  padding: 28px 32px;
+  max-width: 900px;
+}
+.verdict-eye {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--gold2);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.verdict-text {
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.85;
+  font-weight: 300;
+}
+.verdict-text strong { color: var(--gold); font-weight: 500; }
+.verdict-text em { color: var(--red); font-style: normal; font-weight: 500; }
+
+/* ── DEMOGRAPHIC PROJECTION ── */
+.demo-chart {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin: 20px 0 28px;
+  max-width: 700px;
+}
+.demo-year {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.demo-year-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+}
+.demo-bar-wrap {
+  width: 100%;
+  height: 120px;
+  background: var(--bg3);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  position: relative;
+}
+.demo-bar-working {
+  background: var(--gold);
+  border-radius: 3px 3px 0 0;
+  transition: height 0.5s;
+}
+.demo-bar-elderly {
+  background: var(--red);
+  flex-shrink: 0;
+}
+.demo-bar-youth {
+  background: var(--green);
+  border-radius: 0 0 3px 3px;
+  flex-shrink: 0;
+}
+.demo-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text2);
+  text-align: center;
+  line-height: 1.4;
+}
+.demo-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.demo-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text2);
+}
+.demo-legend-swatch {
+  width: 12px; height: 6px;
+  border-radius: 1px;
+}
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 18px 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer span { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+
+/* animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* responsive */
+@media (max-width: 680px) {
+  .header, .tab-wrap, .panel, .footer { padding-left: 20px; padding-right: 20px; }
+  .funnel-row { grid-template-columns: 1fr; }
+  .demo-chart { grid-template-columns: repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="ph-eyebrow">Mirror Analysis · Policy Intelligence Brief</div>
+  <h1 class="ph-title">China's R&D Workforce<br><em>The Numbers the US Needs to See</em></h1>
+  <p class="ph-sub">The same funnel analysis applied to China — from 800+ million active workers down to frontier researchers in fields that directly compete with U.S. reshoring ambitions. China leads in raw numbers and is now #1 in global research output. But demographic collapse, a quality gap in basic research, and accelerating western decoupling create structural vulnerabilities that are rarely discussed.</p>
+  <div class="compare-banner">
+    ⚠ Comparison context: <strong>US active workforce ≈ 168M · China active workforce ≈ 800M</strong> — China's pool is ~4.8× larger before any filtering. The R&D gap is even wider.
+  </div>
+  <div class="ph-meta">
+    <div class="phm">Population: <span>1.408B (declining 3rd yr)</span></div>
+    <div class="phm">TFR 2024: <span>1.01 — among world's lowest ever recorded</span></div>
+    <div class="phm">Nature Index 2024: <span>#1 globally (overtook US in 2023)</span></div>
+    <div class="phm">STEM PhDs/yr: <span>~77,000 (vs ~40,000 US)</span></div>
+    <div class="phm">R&D personnel: <span>6.35M FTE (more than US + EU combined)</span></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-wrap">
+  <button class="tab-btn active" onclick="show('funnel',this)">01 — Workforce funnel</button>
+  <button class="tab-btn" onclick="show('rd',this)">02 — R&D by field</button>
+  <button class="tab-btn" onclick="show('demo',this)">03 — Demographic cliff</button>
+  <button class="tab-btn" onclick="show('risk',this)">04 — Hidden vulnerabilities</button>
+</div>
+
+<!-- ── PANEL 1: FUNNEL ── -->
+<div id="funnel" class="panel active">
+  <div class="section-label">Starting from ~800M active workers → frontier R&D innovators — compared to the US at each level</div>
+
+  <!-- Row 1 -->
+  <div class="funnel-row" style="animation-delay:0.04s">
+    <div>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:100%;background:linear-gradient(90deg,#1a2a4a,#1e3a6a);">
+          <span class="fill-label" style="color:#6090c0;">~800,000,000</span>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:8px;color:var(--text3);margin-top:3px;letter-spacing:0.06em;">100% of active workforce</div>
+    </div>
+    <div class="funnel-info">
+      <div class="f-title">Active Chinese Workforce</div>
+      <div class="f-num" style="color:#6090c0;">~800 million</div>
+      <div class="f-desc">Working-age population (16–59) peaked in 2011 and has been declining since. Labor force participation at ~66%, down from 72% a decade ago. Still ~4.8× the size of the US active workforce.</div>
+      <div class="f-pct">// baseline · 100%</div>
+      <div class="us-compare" style="background:var(--blue-bg);color:#6090c0;border:1px solid var(--blue-border)">US equivalent: 168M · China is 4.8× larger at baseline</div>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="funnel-row" style="animation-delay:0.09s">
+    <div>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:17%;background:linear-gradient(90deg,#2a1a00,#4a2e00);">
+          <span class="fill-label" style="color:var(--gold);">~140M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-info">
+      <div class="f-title">Bachelor's Degree or Higher</div>
+      <div class="f-num" style="color:var(--gold2);">~140–160 million</div>
+      <div class="f-desc">Roughly 17–20% of working-age adults — lower attainment rate per capita than the US (44.5%), but larger absolute number due to population scale. Spans all fields. Quality varies sharply between elite "Double First Class" universities (~200) and the broader system (~3,000 institutions).</div>
+      <div class="f-pct">// ↓ ~17–20% of workforce — lower % than US but larger absolute count</div>
+      <div class="us-compare" style="background:var(--gold-bg);color:var(--gold2);border:1px solid var(--gold-border)">US equivalent: ~75M · China is ~2× larger in absolute terms</div>
+    </div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="funnel-row" style="animation-delay:0.14s">
+    <div>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:70%;background:linear-gradient(90deg,#2a1a00,#3a2800);">
+          <span class="fill-label" style="color:var(--gold);">100–120M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-info">
+      <div class="f-title">STEM Workforce (All Levels)</div>
+      <div class="f-num" style="color:var(--gold2);">~100–120 million</div>
+      <div class="f-desc">STEM workers at all education levels, including the vast skilled technical workforce that powers China's manufacturing base. 60% of Chinese postgraduate enrollment is in STEM/engineering/ag/medicine fields — the highest ratio of any major economy. STEM is not a pipeline challenge in China; it is a cultural and policy priority.</div>
+      <div class="f-pct">// Estimated ~13–15% of workforce — comparable share to US (24%) but 3× larger absolute count</div>
+      <div class="us-compare" style="background:var(--gold-bg);color:var(--gold2);border:1px solid var(--gold-border)">US equivalent: 36.8M · China is ~3× larger</div>
+    </div>
+  </div>
+
+  <!-- Row 4 -->
+  <div class="funnel-row" style="animation-delay:0.19s">
+    <div>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:42%;background:linear-gradient(90deg,#2a1200,#3a1c00);">
+          <span class="fill-label" style="color:var(--amber);">50–70M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-info">
+      <div class="f-title">STEM Workers with Bachelor's+</div>
+      <div class="f-num" style="color:var(--amber);">~50–70 million</div>
+      <div class="f-desc">Degree-holding STEM workers actively employed. Heavily weighted toward engineering and applied science — matching China's manufacturing-industrial base. Computer science, materials science, and chemical engineering are the dominant fields. Software engineers, applied physicists, manufacturing engineers.</div>
+      <div class="f-pct">// ~6–9% of workforce</div>
+      <div class="us-compare" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)">US equivalent: 17.5M · China is ~3–4× larger</div>
+    </div>
+  </div>
+
+  <!-- Row 5 -->
+  <div class="funnel-row" style="animation-delay:0.24s">
+    <div>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:22%;background:linear-gradient(90deg,#2a0e00,#4a1800);">
+          <span class="fill-label" style="color:var(--amber);">18–22M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-info">
+      <div class="f-title">Core S&E Occupations</div>
+      <div class="f-num" style="color:var(--amber);">~18–22 million</div>
+      <div class="f-desc">Scientists and engineers working in actual S&E jobs. China now employs <strong style="color:var(--text)">more researchers than the US and EU combined</strong> (NSF 2024). The concentration in applied/industrial engineering is significantly higher than in the US, reflecting state investment priorities in manufacturing and technology industries.</div>
+      <div class="f-pct">// ~2.5–3% of workforce</div>
+      <div class="us-compare" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)">US equivalent: 9.4M · China is ~2× larger</div>
+    </div>
+  </div>
+
+  <!-- Row 6 -->
+  <div class="funnel-row" style="animation-delay:0.29s">
+    <div>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:12%;background:linear-gradient(90deg,#2a0a00,#4a1000);">
+          <span class="fill-label" style="color:var(--red);">10–14M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-info">
+      <div class="f-title">STEM Master's Degree Holders</div>
+      <div class="f-num" style="color:var(--red);">~10–14 million</div>
+      <div class="f-desc">STEM master's graduates form a large and growing cohort. China's 80%+ doctoral enrollment in STEM fields means the advanced degree pipeline is far more concentrated in technical fields than in the US (where business, law, and healthcare dominate master's programs). Most go into applied industry roles.</div>
+      <div class="f-pct">// ~1.3–1.8% of workforce</div>
+      <div class="us-compare" style="background:var(--red-bg);color:#e07060;border:1px solid var(--red-border)">US equivalent: 4–5M · China is ~2.5–3× larger</div>
+    </div>
+  </div>
+
+  <!-- Row 7 -->
+  <div class="funnel-row" style="animation-delay:0.34s">
+    <div>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:6%;background:linear-gradient(90deg,#2a0500,#500800);">
+          <span class="fill-label" style="color:var(--red);font-size:10px;">5–7M</span>
+        </div>
+      </div>
+    </div>
+    <div class="funnel-info">
+      <div class="f-title">Active STEM PhDs in R&D Roles</div>
+      <div class="f-num" style="color:var(--red);">~5–7 million</div>
+      <div class="f-desc">China produces ~77,000 STEM PhDs per year (projected 2025) vs. ~40,000 in the US. <strong style="color:var(--text)">Over 80% of researchers in national key R&D programs are under age 45</strong> — a significantly younger active research workforce than the US. 45% of Chinese PhDs graduate from Double First Class (A) elite universities.</div>
+      <div class="f-pct">// ~0.7–0.9% of workforce</div>
+      <div class="us-compare" style="background:var(--red-bg);color:#e07060;border:1px solid var(--red-border)">US equivalent: 1.2–1.5M · China is ~4–5× larger</div>
+    </div>
+  </div>
+
+  <!-- Row 8 — FINAL -->
+  <div class="funnel-row" style="animation-delay:0.39s;border-bottom:2px solid var(--gold);">
+    <div>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:2.5%;background:var(--gold);min-width:24px;">
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--gold2);margin-top:4px;letter-spacing:0.06em;">~0.2–0.3% of workforce</div>
+    </div>
+    <div class="funnel-info">
+      <div class="f-title">Frontier R&D Innovators — Reshoring-Competitive Fields</div>
+      <div class="f-num" style="color:var(--gold);">~1.5–2.5 million</div>
+      <div class="f-desc">Researchers actively pushing the frontier in semiconductors, rare earths, batteries, solar, shipbuilding, materials science, pharmaceuticals, and critical minerals. China's R&D expenditure reached $812B PPP (2022) — 88% of US levels — but with ~4× the researchers at lower cost. <strong style="color:var(--text)">In most industrial R&D fields, China's researcher headcount exceeds the US by 5–10×.</strong></div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge b-dom">5–10× US headcount</span>
+        <span class="badge b-lead">Nature Index #1 globally (2024)</span>
+        <span class="badge b-comp">Nearly all domestic-born</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert-box">
+    <div class="alert-icon">KEY ASYMMETRY</div>
+    <div class="alert-text">Unlike the US (where 40–45% of frontier R&D is foreign-born), <strong>China's R&D workforce is overwhelmingly domestic</strong> — less vulnerable to immigration policy shocks. However, this also means China's research system is less exposed to outside ideas and more dependent on sustaining its own educational pipeline — which the demographic cliff directly threatens within 15–20 years.</div>
+  </div>
+</div>
+
+<!-- ── PANEL 2: R&D BY FIELD ── -->
+<div id="rd" class="panel">
+  <div class="section-label">Estimated active frontier researchers per field — compared directly to US equivalents</div>
+  <p class="rd-intro">China's position ranges from overwhelming global dominance (rare earths, batteries, solar, shipbuilding) to genuine strategic vulnerability (advanced semiconductors, basic research in frontier physics). The "large but not strong enough" critique acknowledged by Chinese academics themselves applies most sharply to fundamental/basic research — where the US still leads in Nobel-quality original work.</p>
+
+  <table class="rd-table">
+    <thead>
+      <tr>
+        <th style="width:26%">Field</th>
+        <th style="width:14%">China researchers</th>
+        <th style="width:12%">US researchers</th>
+        <th style="width:10%">China advantage</th>
+        <th>China's position</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="animation-delay:0.04s">
+        <td>
+          <div class="rd-field">Rare earth processing &amp; magnets</div>
+          <div class="rd-sub">Separation, hydrometallurgy, NdFeB magnets</div>
+          <span class="badge b-dom">Global dominant</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--gold);">~80,000–100,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--gold);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~5,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:6%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--gold);font-weight:500;">16–20×</div></td>
+        <td><div class="rd-gap-text">China processes 90% of global rare earth supply. Produces 85–90% of rare earth permanent magnets (260,000 tons in 2024). 20+ years of compounding institutional knowledge. China is actively patenting tomorrow's rare earth breakthroughs — not just owning today's production. The gap with the US here is the largest in any technology field.</div></td>
+      </tr>
+      <tr style="animation-delay:0.08s">
+        <td>
+          <div class="rd-field">EV batteries &amp; energy storage</div>
+          <div class="rd-sub">LFP, NMC, CATL ecosystem, cell design</div>
+          <span class="badge b-dom">Global dominant</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--gold);">~400,000–500,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--gold);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~18,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:4%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--gold);font-weight:500;">22–28×</div></td>
+        <td><div class="rd-gap-text">CATL alone employs ~20,000+ R&D staff. China's dominance in LFP battery chemistry (which is displacing NMC as the global standard) means it leads in the dominant future format, not just the legacy format. BYD, SVOLT, CALB, and dozens of others form a deep ecosystem the US has nothing comparable to.</div></td>
+      </tr>
+      <tr style="animation-delay:0.12s">
+        <td>
+          <div class="rd-field">Solar PV manufacturing</div>
+          <div class="rd-sub">Wafer, cell, module, inverter R&D</div>
+          <span class="badge b-dom">Global dominant</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--gold);">~300,000–400,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--gold);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~14,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:4%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--gold);font-weight:500;">21–29×</div></td>
+        <td><div class="rd-gap-text">China produces ~80% of global solar panels. The R&D ecosystem behind this — wafer slicing, cell efficiency optimization, module assembly, inverter design — is 20 years deep. LONGi, JA Solar, Tongwei collectively invest billions annually in research that US firms simply cannot match at scale.</div></td>
+      </tr>
+      <tr style="animation-delay:0.16s">
+        <td>
+          <div class="rd-field">Shipbuilding &amp; marine engineering</div>
+          <div class="rd-sub">Commercial vessels, LNG carriers, naval</div>
+          <span class="badge b-dom">Global dominant</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--gold);">~400,000–600,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--gold);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~3,200</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:0.6%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--gold);font-weight:500;">125–190×</div></td>
+        <td><div class="rd-gap-text">China builds ~50% of global commercial tonnage. CSSC, CSIC, and their subsidiaries employ hundreds of thousands of engineers and naval architects. The US comparison — 3 remaining naval architecture programs, industry essentially gone — represents the most extreme asymmetry of any field measured.</div></td>
+      </tr>
+      <tr style="animation-delay:0.20s">
+        <td>
+          <div class="rd-field">Materials science (advanced)</div>
+          <div class="rd-sub">Functional materials, composites, coatings</div>
+          <span class="badge b-lead">Global leader (output)</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--gold);">~500,000–700,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--gold);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~22,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:3%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--gold);font-weight:500;">23–32×</div></td>
+        <td><div class="rd-gap-text">China leads the Nature Index in materials science — the field where it is strongest globally. Research output is enormous. Quality caveat: volume leadership does not always equal frontier breakthrough leadership. US basic materials research still produces more Nobel-caliber work per capita. But applied materials for manufacturing? China leads decisively.</div></td>
+      </tr>
+      <tr style="animation-delay:0.24s">
+        <td>
+          <div class="rd-field">Chemical &amp; process engineering</div>
+          <div class="rd-sub">Industrial synthesis, refining, scale-up</div>
+          <span class="badge b-lead">Global leader</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--gold);">~400,000–550,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--gold);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~38,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:7%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--gold);font-weight:500;">10–15×</div></td>
+        <td><div class="rd-gap-text">China's massive chemical industry employs an enormous applied research workforce. Process engineering for manufacturing scale-up is a specific Chinese strength — exactly the skill the US lacks and most needs for reshoring. China's institutional knowledge in industrial process chemistry is 3 decades deep.</div></td>
+      </tr>
+      <tr style="animation-delay:0.28s">
+        <td>
+          <div class="rd-field">Pharmaceuticals &amp; API synthesis</div>
+          <div class="rd-sub">Generic drug manufacturing, bioprocess</div>
+          <span class="badge b-comp">Strong · Not dominant</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~200,000–280,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:60%;background:var(--amber);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~75,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:32%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--amber);font-weight:500;">3–4×</div></td>
+        <td><div class="rd-gap-text">China is the world's largest API manufacturer but faces genuine competition from India. Drug discovery (as opposed to manufacturing process) is weaker — India and the US both punch above their weight here relative to headcount. China's strength is in manufacturing chemistry, not therapeutic innovation.</div></td>
+      </tr>
+      <tr style="animation-delay:0.32s">
+        <td>
+          <div class="rd-field">Critical minerals mining &amp; processing</div>
+          <div class="rd-sub">Extraction, beneficiation, metallurgy</div>
+          <span class="badge b-dom">Dominant in processing</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--gold);">~200,000–300,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--gold);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~4,500</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:2%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--gold);font-weight:500;">44–67×</div></td>
+        <td><div class="rd-gap-text">China refines between 47% and 87% of copper, lithium, cobalt, graphite, and rare earths. The refining and processing engineering workforce is enormous and deeply experienced. China is also rapidly advancing in REE recycling patents — ensuring future supply chain dominance even as virgin mining diversifies away.</div></td>
+      </tr>
+      <tr style="animation-delay:0.36s">
+        <td>
+          <div class="rd-field">Semiconductors (advanced)</div>
+          <div class="rd-sub">Logic chips, memory, packaging</div>
+          <span class="badge b-lag">Equipment-constrained</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~250,000–350,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:85%;background:var(--amber);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~45,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:18%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--amber);font-weight:500;">5–8×</div></td>
+        <td><div class="rd-gap-text">This is China's most critical strategic vulnerability. ASML export bans prevent access to EUV lithography — the tool needed for sub-7nm chips. SMIC and HiSilicon have enormous teams but are structurally blocked at the leading edge. China can produce legacy chips competitively; it cannot make advanced AI chips without ASML. This is the one field where western export controls are genuinely effective.</div></td>
+      </tr>
+      <tr style="animation-delay:0.40s">
+        <td>
+          <div class="rd-field">Basic &amp; fundamental research</div>
+          <div class="rd-sub">Frontier physics, novel materials, biotech</div>
+          <span class="badge b-lag">Volume leader · Quality gap</span>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--amber);">~600,000–900,000</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:75%;background:var(--amber);"></div></div></div>
+        </td>
+        <td>
+          <div class="rd-num" style="color:var(--text3);">~300,000+</div>
+          <div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:35%;background:var(--text3);"></div></div></div>
+        </td>
+        <td><div style="font-family:var(--font-mono);font-size:13px;color:var(--amber);font-weight:500;">2–3× (volume)</div></td>
+        <td><div class="rd-gap-text">China leads the Nature Index overall (#1 in 2024) and overtook the US in raw research output. But Chinese academics themselves acknowledge the gap: "large in number but not strong enough." US still leads in breakthrough basic research — the discoveries that create entirely new fields. China is closing this gap rapidly, but it hasn't closed it yet.</div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── PANEL 3: DEMOGRAPHIC CLIFF ── -->
+<div id="demo" class="panel">
+  <div class="section-label">China's demographic trajectory — the structural threat hiding behind the headline numbers</div>
+
+  <p style="font-size:13px;color:var(--text2);line-height:1.7;max-width:720px;margin-bottom:24px;">China's workforce numbers today are formidable. But the one-child policy legacy is now arriving as a demographic crisis. The working-age population has been declining since 2011. The youth cohort (15–24) has shrunk 15% since 2015. And with a TFR of 1.01 — among the lowest ever recorded for a large economy — the trajectory is locked in for decades regardless of current policy.</p>
+
+  <div class="demo-legend">
+    <div class="demo-legend-item"><div class="demo-legend-swatch" style="background:var(--gold);"></div>Working-age (15–64)</div>
+    <div class="demo-legend-item"><div class="demo-legend-swatch" style="background:var(--red);"></div>Elderly (65+)</div>
+    <div class="demo-legend-item"><div class="demo-legend-swatch" style="background:var(--green);"></div>Youth (0–14)</div>
+  </div>
+
+  <!-- Demographic projection bars -->
+  <div class="demo-chart">
+    <!-- 2000 -->
+    <div class="demo-year">
+      <div class="demo-year-label">2000</div>
+      <div class="demo-bar-wrap">
+        <div class="demo-bar-working" style="height:70%;"></div>
+        <div class="demo-bar-elderly" style="height:6%;"></div>
+        <div class="demo-bar-youth" style="height:24%;"></div>
+      </div>
+      <div class="demo-num">Working: 70%<br>Elderly: 6%</div>
+    </div>
+    <!-- 2010 -->
+    <div class="demo-year">
+      <div class="demo-year-label">2010</div>
+      <div class="demo-bar-wrap">
+        <div class="demo-bar-working" style="height:73%;"></div>
+        <div class="demo-bar-elderly" style="height:8%;"></div>
+        <div class="demo-bar-youth" style="height:19%;"></div>
+      </div>
+      <div class="demo-num">Working: 73%<br>Elderly: 8%</div>
+    </div>
+    <!-- 2025 NOW -->
+    <div class="demo-year">
+      <div class="demo-year-label" style="color:var(--gold);">2025 ▶</div>
+      <div class="demo-bar-wrap" style="border:1px solid var(--gold-border);">
+        <div class="demo-bar-working" style="height:68%;"></div>
+        <div class="demo-bar-elderly" style="height:15%;"></div>
+        <div class="demo-bar-youth" style="height:17%;"></div>
+      </div>
+      <div class="demo-num" style="color:var(--gold);">Working: 68%<br>Elderly: 15%</div>
+    </div>
+    <!-- 2035 -->
+    <div class="demo-year">
+      <div class="demo-year-label">2035</div>
+      <div class="demo-bar-wrap">
+        <div class="demo-bar-working" style="height:62%;"></div>
+        <div class="demo-bar-elderly" style="height:22%;"></div>
+        <div class="demo-bar-youth" style="height:16%;"></div>
+      </div>
+      <div class="demo-num">Working: 62%<br>Elderly: 22%+</div>
+    </div>
+    <!-- 2050 -->
+    <div class="demo-year">
+      <div class="demo-year-label" style="color:var(--red);">2050 ⚠</div>
+      <div class="demo-bar-wrap" style="border:1px solid var(--red-border);">
+        <div class="demo-bar-working" style="height:55%;"></div>
+        <div class="demo-bar-elderly" style="height:30%;"></div>
+        <div class="demo-bar-youth" style="height:15%;"></div>
+      </div>
+      <div class="demo-num" style="color:var(--red);">Working: 55%<br>Elderly: 30%</div>
+    </div>
+    <!-- 2070 -->
+    <div class="demo-year">
+      <div class="demo-year-label" style="color:var(--red);">2070</div>
+      <div class="demo-bar-wrap">
+        <div class="demo-bar-working" style="height:48%;"></div>
+        <div class="demo-bar-elderly" style="height:38%;"></div>
+        <div class="demo-bar-youth" style="height:14%;"></div>
+      </div>
+      <div class="demo-num" style="color:var(--red);">Working: 48%<br>Elderly: 38%</div>
+    </div>
+  </div>
+
+  <div class="stat-grid" style="margin-top:8px;">
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.25);">
+      <div class="stat-label">Total fertility rate<br>(2024, est.)</div>
+      <div class="stat-val" style="color:var(--red);">1.01</div>
+      <div class="stat-note">Among the lowest ever recorded for a large economy. Replacement level is 2.1. This is not a policy problem — it is a structural collapse driven by urbanization, cost of living, and the cultural legacy of one-child norms.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.25);">
+      <div class="stat-label">Working-age population<br>peak year</div>
+      <div class="stat-val" style="color:var(--red);">2011</div>
+      <div class="stat-note">The peak has already passed. Working-age has been declining for 14 years. By 2050, fewer than 2 working-age adults per elderly person — vs. 2.5 in the US. The manufacturing miracle was powered by demographic dividend that is now in reverse.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(201,123,42,0.25);">
+      <div class="stat-label">Youth cohort (15–24)<br>decline since 2015</div>
+      <div class="stat-val" style="color:var(--amber);">−15%</div>
+      <div class="stat-note">The pipeline feeding the STEM workforce has already contracted significantly. The doctoral students of 2025 were born under one-child. The doctoral students of 2040 were born at TFR 1.1. Each cohort is smaller than the last.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(201,123,42,0.25);">
+      <div class="stat-label">Youth unemployment<br>(16–24, 2024)</div>
+      <div class="stat-val" style="color:var(--amber);">14.9%</div>
+      <div class="stat-note">Paradoxically, China has youth unemployment despite a STEM workforce shortage. This signals a dangerous mismatch — education system producing graduates the economy cannot yet absorb in high-value roles. Signals structural rather than cyclical problems.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.25);">
+      <div class="stat-label">Population decline<br>(consecutive years, 2024)</div>
+      <div class="stat-val" style="color:var(--red);">3rd year</div>
+      <div class="stat-note">China's population fell 1.39M in 2024 alone. Births fell 17% in 2025 to a new record low despite years of pro-natalist incentives. The UN estimates Chinese population could fall below 1 billion by 2100.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.25);">
+      <div class="stat-label">Elderly (60+) share<br>of population (2024)</div>
+      <div class="stat-val" style="color:var(--red);">22%</div>
+      <div class="stat-note">310 million people over 60. This will exceed 30% by 2035. Pension system under severe strain. Healthcare costs rising. Fewer workers to support each retiree. This is the fiscal burden that will compete with R&D investment for government resources.</div>
+    </div>
+  </div>
+
+  <div class="verdict" style="border-color:rgba(192,57,43,0.3);background:rgba(192,57,43,0.04);">
+    <div class="verdict-eye">// The demographic bottom line for China's R&D workforce</div>
+    <div class="verdict-text">
+      China's R&D dominance today is real and formidable. But it was built on a demographic dividend that <em>has already ended</em>. The cohorts entering PhD programs over the next 20 years are smaller than their predecessors, and they will face a larger elderly dependency burden that competes for state resources. <strong>China faces a closing window</strong> — roughly 15–20 years in which its current workforce advantages remain intact — before demographic contraction begins to erode the research workforce headcount that makes everything else possible. This doesn't mean China loses; automation and AI could offset demographic decline. But it means the current trajectory is not indefinitely sustainable, and the US has a window to close gaps that will not remain open forever.
+    </div>
+  </div>
+</div>
+
+<!-- ── PANEL 4: HIDDEN VULNERABILITIES ── -->
+<div id="risk" class="panel">
+  <div class="section-label">What the headline numbers obscure — China's structural research vulnerabilities</div>
+
+  <div class="stat-grid">
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.2);">
+      <div class="stat-label">China Nature Index share<br>vs. US (2024)</div>
+      <div class="stat-val" style="color:var(--gold);">32,122<br><span style="font-size:14px;color:var(--red);">vs. 22,083 US</span></div>
+      <div class="stat-note">China is now #1 in research output globally, overtaking the US in 2023. Its share grew 17.4% in one year. But quantity of papers is not the same as quality of breakthroughs.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.2);">
+      <div class="stat-label">Chinese citations of US<br>papers (post-2015 change)</div>
+      <div class="stat-val" style="color:var(--amber);">−10%</div>
+      <div class="stat-note">Geopolitical decoupling is reducing scientific collaboration. Chinese citations of recent US publications fell 10% after 2015. Both sides lose from this — but China loses more, given the US still leads in fundamental research breakthroughs.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.2);">
+      <div class="stat-label">ASML EUV machines<br>in China (allowed)</div>
+      <div class="stat-val" style="color:var(--red);">0</div>
+      <div class="stat-note">The single most important technology chokepoint. Without EUV lithography, China cannot manufacture leading-edge chips (sub-7nm). This is the one field where western export controls are genuinely decisive. SMIC is structurally frozen at ~7nm without workarounds.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.2);">
+      <div class="stat-label">Chinese PhD programs:<br>international student share</div>
+      <div class="stat-val" style="color:var(--amber);">~7%</div>
+      <div class="stat-note">Unlike US programs (where international students are 45%+ of PhD students), Chinese programs are overwhelmingly domestic. This makes China more resilient to immigration shocks — but also more insular, with less exposure to diverse intellectual traditions that drive breakthrough research.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.2);">
+      <div class="stat-label">R&D under-45 researchers<br>in key national programs</div>
+      <div class="stat-val" style="color:var(--green);">80%+</div>
+      <div class="stat-note">A much younger research workforce than the US. This is a genuine advantage today — energy, ambition, long careers ahead. But it also means the workforce is less experienced, and relies more heavily on institutional structure than individual expertise accumulated over decades.</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(192,57,43,0.2);">
+      <div class="stat-label">China R&D spend (PPP)<br>vs. US (2022)</div>
+      <div class="stat-val" style="color:var(--amber);">88%</div>
+      <div class="stat-note">China's $812B GERD vs. US $923B — but with ~4× the researchers. Lower labor costs mean more headcount per dollar, but also that per-researcher investment is far lower — which correlates with research quality constraints.</div>
+    </div>
+  </div>
+
+  <div class="risk-block demo" style="animation-delay:0.04s">
+    <div class="risk-block-title">The demographic cliff is arriving faster than policy can respond</div>
+    <div class="risk-block-body">The one-child policy did not just reduce births — it <strong>fundamentally rewired Chinese society's attitude toward family size</strong>. A 2024 study found urban couples estimated child-rearing costs at 630,000 yuan ($86,000) to age 18, in a society where supporting two sets of aging parents as only children themselves is the norm. <em>The pronatalist policy pivot came too late.</em> China reversed the one-child policy in 2015, moved to three children in 2021, and removed all limits by July 2021 — but births fell 17% in 2025 anyway, reaching a record low. The RAND Corporation's 2025 analysis concluded that pronatalist policies have not reversed fertility decline. The cohort shrinkage is now locked in for the next 40 years regardless of what policy does from here.</div>
+  </div>
+
+  <div class="risk-block qual" style="animation-delay:0.08s">
+    <div class="risk-block-title">The "large but not strong enough" gap in basic research</div>
+    <div class="risk-block-body">This critique comes from Chinese academics themselves — not western analysts. China leads the world in <em>applied</em> research — materials for manufacturing, process engineering, industrial chemistry, battery chemistry — where the state's ability to direct massive resources toward defined goals is maximally effective. But <strong>fundamental/basic research — the kind that creates entirely new fields and enables Nobel-caliber breakthroughs — still skews toward the US</strong>, UK, and Europe. The reason is structural: breakthrough basic research requires intellectual freedom, tolerance for productive failure, and diversity of thought that centrally-directed research systems historically struggle to sustain. China is aware of this limitation and is actively trying to address it — but the culture of research cannot be changed by policy mandate alone.</div>
+  </div>
+
+  <div class="risk-block deco" style="animation-delay:0.12s">
+    <div class="risk-block-title">Western research decoupling — losing access to the collaborative ecosystem that accelerated China's rise</div>
+    <div class="risk-block-body">Much of China's rapid research ascent was powered by <strong>return migration</strong> — Chinese researchers trained at MIT, Stanford, Caltech, and Cambridge who brought western methodologies and networks back to Chinese institutions. Citations of US publications fell 10% after 2015; enrollment of Chinese students in US PhD programs dropped ~3.7 percentage points. As geopolitical tensions persist, this pipeline of knowledge transfer narrows. <em>China's research ecosystem was built partly on absorbing western scientific culture</em> — losing access to that collaboration affects the quality of frontier research in ways that headcount alone cannot compensate for. The decoupling is mutual and damaging to both sides, but China's applied research strength makes it more resilient in the short term; the long-term quality implications are more uncertain.</div>
+  </div>
+
+  <div class="risk-block inno" style="animation-delay:0.16s">
+    <div class="risk-block-title">State direction: strength in application, weakness in original invention</div>
+    <div class="risk-block-body">China's research system excels at <em>directed industrialization of existing science</em> — taking known principles and scaling them into industrial dominance faster and cheaper than any other economy. This is how it achieved mastery of rare earth processing, battery manufacturing, solar PV, and shipbuilding. But <strong>the technologies that will define the next 30 years — quantum computing, synthetic biology, generative AI architecture, novel drug mechanisms — tend to emerge from undirected curiosity-driven research</strong> rather than state planning. The US university system's tolerance for high-variance, seemingly impractical basic research has historically been the source of transformative breakthroughs (the internet, CRISPR, mRNA vaccines, large language models). China's centrally directed system struggles to replicate this generative randomness. Whether AI-assisted research changes this calculus is the single most important open question in global science.</div>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-eye">// The honest comparative verdict</div>
+    <div class="verdict-text">
+      China's R&D workforce is <strong>genuinely formidable in ways the US consistently underestimates</strong> — 5–10× the headcount in most industrial research fields, #1 in global research output, 2× the annual STEM PhD production, and 20+ years of institutional knowledge lead in the fields that matter most for US reshoring: rare earths, batteries, solar, shipbuilding, and chemical processing.
+      <br><br>
+      <em>The US cannot close these gaps through domestic reshoring alone within any realistic timeline.</em> In rare earth processing, batteries, and shipbuilding, China's advantage is so deep that it would take 25–40 years of sustained investment for the US to achieve parity — by which time China will have advanced further. The rational response is not a race to match China on its own terms, but a networked allied strategy that creates resilient alternative supply chains while accepting that China will remain dominant in several industrial sectors for the foreseeable future.
+      <br><br>
+      <strong>China's vulnerabilities are real but long-dated:</strong> the demographic cliff will constrain research workforce growth beginning in earnest around 2030–2035; the quality gap in basic research leaves China dependent on applied applications of western-originated science; and the EUV semiconductor chokepoint is a genuine strategic constraint. But none of these vulnerabilities create short-term windows. They create a 15–20 year window in which the US and its allies must build the alternative infrastructure — before demographic and geopolitical dynamics shift again.
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>Sources: NSF Science & Engineering Indicators 2024–25 · CSET Georgetown · Nature Index 2024–25 · RAND Corp · ILO · UN World Population Prospects 2024 · Xinhua/NBS China · Washington Post China Demographics 2025 · NBER</span>
+  <span>Generated via Claude (Anthropic) · April 2026 · For policy discussion and educational purposes</span>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+<style>
+.rsn{position:fixed;bottom:0;left:0;right:0;height:50px;background:rgba(4,4,6,0.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,0.09);display:flex;align-items:center;padding:0 22px;z-index:9999;gap:10px;font-family:"JetBrains Mono","Fira Code","IBM Plex Mono",monospace;}
+.rsn *{box-sizing:border-box;}
+.rsn a{text-decoration:none;transition:opacity 0.15s;}
+.rsn a:hover{opacity:0.55;}
+.rsn-left,.rsn-right{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+.rsn-right{justify-content:flex-end;}
+.rsn-home{font-size:17px;color:rgba(255,255,255,0.28);flex-shrink:0;}
+.rsn-arr{font-size: 17px;color:rgba(255,255,255,0.28);flex-shrink:0;}
+.rsn-lbl{font-size:10px;color:rgba(255,255,255,0.36);letter-spacing:0.07em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rsn-mid{display:flex;align-items:center;gap:9px;flex-shrink:0;position:relative;padding-top:4px;}
+.rsn-series{font-size:8px;color:rgba(255,255,255,0.15);letter-spacing:0.2em;text-transform:uppercase;position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none;}
+.rsn-d{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.16);display:block;transition:background 0.2s,transform 0.2s;flex-shrink:0;}
+.rsn-d:hover{background:rgba(255,255,255,0.5)!important;}
+.rsn-d.on{background:#fff!important;transform:scale(1.5);}
+</style>
+
+<div style="height:58px"></div>
+<nav class="rsn" aria-label="Series navigation">
+  <a href="index.html" class="rsn-home" title="Series home">&#8962;</a>
+  <div class="rsn-left"><a href="us_rd_workforce_dashboard.html" class="rsn-arr">&#8592;</a><a href="us_rd_workforce_dashboard.html" class="rsn-lbl">U.S. R&D Workforce</a></div>
+  <div class="rsn-mid">
+    <span class="rsn-series">The Reshoring Reality</span>
+    <a href="us_rd_workforce_dashboard.html" class="rsn-d" title="1 · U.S. R&D Workforce"></a><a href="china_rd_workforce.html" class="rsn-d on" title="2 · China R&D Workforce"></a><a href="allied_network_dashboard.html" class="rsn-d" title="3 · Allied Supply Web"></a><a href="reshoring_decisions.html" class="rsn-d" title="4 · Reshoring Decisions"></a><a href="reshoring_executive_summary.html" class="rsn-d" title="5 · Executive Summary"></a><a href="alabama_reshoring.html" class="rsn-d" title="6 · Alabama's Moment"></a>
+  </div>
+  <div class="rsn-right"><a href="allied_network_dashboard.html" class="rsn-lbl">Allied Supply Web</a><a href="allied_network_dashboard.html" class="rsn-arr">&#8594;</a></div>
+</nav>
+</body>
+</html>

@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Western Supply Web — Partial Deglobalization Done Right</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #07080a;
+  --bg2:     #0d0f13;
+  --bg3:     #13161c;
+  --bg4:     #1a1e27;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text:    #dde2ea;
+  --text2:   #8b93a4;
+  --text3:   #4a5060;
+
+  /* region colors */
+  --c-na:    #3b9eff;   /* North America */
+  --c-latam: #2ec97e;  /* Latin America */
+  --c-asia:  #f5a623;  /* Asian allies */
+  --c-eu:    #a78bfa;  /* EU/UK */
+  --c-quad:  #fb923c;  /* Quad */
+
+  --c-na-dim:    rgba(59,158,255,0.12);
+  --c-latam-dim: rgba(46,201,126,0.12);
+  --c-asia-dim:  rgba(245,166,35,0.12);
+  --c-eu-dim:    rgba(167,139,250,0.12);
+
+  --red:     #ff5555;
+  --amber:   #f5a623;
+  --green:   #2ec97e;
+  --blue:    #3b9eff;
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border2);
+  padding: 32px 44px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content:'';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--c-na), var(--c-latam), var(--c-asia), var(--c-eu));
+}
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.header-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4.5vw, 42px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.header h1 em {
+  font-style: normal;
+  color: var(--green);
+}
+.header-sub {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 660px;
+  line-height: 1.7;
+}
+.premise-box {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--green);
+  border-radius: 4px;
+  padding: 14px 18px;
+  max-width: 340px;
+  flex-shrink: 0;
+}
+.premise-box p {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.premise-box strong { color: var(--text); font-weight: 500; }
+.header-meta {
+  margin-top: 18px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.hm { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+.hm span { color: var(--text2); }
+
+/* region legend */
+.legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text2);
+  letter-spacing: 0.06em;
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── TABS ── */
+.tab-wrap {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 44px;
+  display: flex;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow-x: auto;
+}
+.tab-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 15px 18px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* ── PANELS ── */
+.panel { display: none; padding: 36px 44px 64px; }
+.panel.active { display: block; }
+.panel-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── PARTNER CARDS GRID ── */
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+.pcard {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px 20px;
+  transition: border-color 0.2s, transform 0.15s;
+  animation: fadeUp 0.35s ease both;
+  position: relative;
+  overflow: hidden;
+}
+.pcard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.pcard:hover { border-color: var(--border2); transform: translateY(-1px); }
+
+.pcard-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.pcard-flag {
+  font-size: 22px;
+  line-height: 1;
+}
+.pcard-rel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.rel-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.rel-dots {
+  display: flex;
+  gap: 3px;
+}
+.rel-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bg4);
+}
+.rel-dot.filled { }
+
+.pcard-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.pcard-region {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.pcard-contrib {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.ctag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  padding: 3px 7px;
+  border-radius: 2px;
+  border: 1px solid;
+  font-weight: 500;
+}
+.pcard-note {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.65;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-top: 2px;
+}
+.pcard-note strong { color: var(--text); font-weight: 500; }
+
+.warn-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  margin-top: 6px;
+  letter-spacing: 0.06em;
+}
+
+/* ── COVERAGE MATRIX ── */
+.matrix-scroll { overflow-x: auto; }
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+.matrix th {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 400;
+  padding: 0 12px 12px 0;
+  text-align: left;
+  border-bottom: 1px solid var(--border2);
+  white-space: nowrap;
+}
+.matrix td {
+  padding: 13px 12px 13px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.matrix tr:last-child td { border-bottom: none; }
+.matrix tr:hover td { background: rgba(255,255,255,0.015); }
+
+.need-name { font-weight: 500; color: var(--text); font-size: 15px; }
+.need-sub  { font-family: var(--font-mono); font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+.cov-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.cov-chip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.gap-text {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.6;
+  max-width: 300px;
+}
+.gap-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 2px;
+  margin-top: 5px;
+}
+.g-covered   { background: rgba(46,201,126,0.1);  color: var(--green); border: 1px solid rgba(46,201,126,0.25); }
+.g-partial   { background: rgba(245,166,35,0.1);  color: var(--amber); border: 1px solid rgba(245,166,35,0.25); }
+.g-critical  { background: rgba(255,85,85,0.1);   color: var(--red);   border: 1px solid rgba(255,85,85,0.25); }
+
+/* ── RELATIONSHIP HEALTH ── */
+.rel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 36px;
+}
+.rel-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 18px;
+  animation: fadeUp 0.35s ease both;
+}
+.rel-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.rel-card-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+}
+.rel-score-wrap {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.rel-score-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+}
+.rel-card-status {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+.rel-card-note {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+.rel-card-note strong { color: var(--text); font-weight: 500; }
+
+/* ── WHAT REMAINS ── */
+.remains-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.remain-card {
+  background: var(--bg2);
+  border: 1px solid rgba(255,85,85,0.2);
+  border-radius: 6px;
+  padding: 18px 20px;
+  animation: fadeUp 0.35s ease both;
+}
+.remain-card-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.remain-card-title::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+}
+.remain-card-body {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.remain-card-body strong { color: var(--amber); font-weight: 500; }
+
+/* ── VERDICT ── */
+.verdict {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--green);
+  border-radius: 6px;
+  padding: 28px 32px;
+  max-width: 900px;
+  margin-top: 36px;
+}
+.verdict-eye {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.verdict-text {
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.85;
+  font-weight: 300;
+}
+.verdict-text strong { color: var(--green); font-weight: 500; }
+.verdict-text em { color: var(--amber); font-style: normal; font-weight: 500; }
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 20px 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.footer-l, .footer-r {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  line-height: 1.8;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 680px) {
+  .header, .tab-wrap, .panel, .footer { padding-left: 20px; padding-right: 20px; }
+  .header-top { flex-direction: column; }
+  .premise-box { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-eyebrow">Strategic Supply Chain Brief // Allied Network Analysis</div>
+      <h1>The Western Supply Web<br><em>Partial Deglobalization Done Right</em></h1>
+      <p class="header-sub">What the US reshoring challenge actually looks like if we don't try to do it alone — mapping the allied network that already exists, what each partner uniquely provides, where the relationships stand today, and what gaps remain even with full cooperation.</p>
+    </div>
+    <div class="premise-box">
+      <p><strong>The premise:</strong> Full domestic self-sufficiency is environmentally impossible and demographically implausible. But a coordinated western-aligned supply web — North America, key Asian allies, selective EU partnerships, and Latin America — can cover most critical gaps within 10–20 years rather than 30–40. <strong>The question is whether the political will to cooperate survives long enough to let it work.</strong></p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="hm">Scope: <span>15 key partners across 4 blocs</span></div>
+    <div class="hm">Coverage: <span>10 critical reshoring need areas</span></div>
+    <div class="hm">Data: <span>2025–2026 agreements & status</span></div>
+    <div class="hm">Generated: <span>April 2026</span></div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-na)"></div>North America</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-latam)"></div>Latin America</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-asia)"></div>Asian Allies</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-eu)"></div>EU / UK</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-wrap">
+  <button class="tab-btn active" onclick="show('partners',this)">01 — Partner profiles</button>
+  <button class="tab-btn" onclick="show('matrix',this)">02 — Coverage by need</button>
+  <button class="tab-btn" onclick="show('health',this)">03 — Relationship health</button>
+  <button class="tab-btn" onclick="show('gaps',this)">04 — Remaining gaps</button>
+</div>
+
+<!-- ── PANEL 1: PARTNERS ── -->
+<div id="partners" class="panel active">
+  <div class="panel-label">Who's in the network — what they uniquely provide — where things stand</div>
+  <div class="partners-grid">
+
+    <!-- Canada -->
+    <div class="pcard" style="animation-delay:0.04s; border-top-color:var(--c-na);">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-na);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇨🇦</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-na)"></div>
+            <div class="rel-dot filled" style="background:var(--c-na)"></div>
+            <div class="rel-dot filled" style="background:var(--c-na)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Canada</div>
+      <div class="pcard-region" style="color:var(--c-na)">North America · USMCA</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Critical minerals</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Uranium</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Aluminum</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Pharma APIs</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Lumber</span>
+      </div>
+      <div class="pcard-note">Canada leads the <strong>Critical Minerals Production Alliance</strong> (26 investments since June 2025) and is world #1 or #2 in potash, uranium, and nickel. Deep USMCA integration means supply chains are already physically linked. <span class="warn-tag" style="background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.25)">⚠ Annexation rhetoric and 25% tariff threats have strained trust. Repairable but not ignored.</span></div>
+    </div>
+
+    <!-- Mexico -->
+    <div class="pcard" style="animation-delay:0.08s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-na);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇲🇽</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-na)"></div>
+            <div class="rel-dot filled" style="background:var(--c-na)"></div>
+            <div class="rel-dot filled" style="background:var(--c-na)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Mexico</div>
+      <div class="pcard-region" style="color:var(--c-na)">North America · USMCA</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Silver (#1 global)</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Copper</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Fluorite</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Graphite</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Mfg hub</span>
+        <span class="ctag" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">Antimony</span>
+      </div>
+      <div class="pcard-note">Mexico produces 8 of the 60 USGS critical minerals and is the world's <strong>#1 silver producer</strong>. A Feb 2026 USTR Action Plan on Critical Minerals signals formal integration. Mexico's manufacturing base (Taiwan firms in Juarez, auto sector in Monterrey) makes it a <strong>near-shoring anchor</strong>. Lithium nationalized — policy uncertainty is real. But USMCA architecture keeps it deeply integrated regardless.</div>
+    </div>
+
+    <!-- Australia -->
+    <div class="pcard" style="animation-delay:0.12s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-asia);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇦🇺</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Australia</div>
+      <div class="pcard-region" style="color:var(--c-asia)">Asian Allies · AUKUS · Quad</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Lithium (#1 global)</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Cobalt</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">REE deposits</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Nickel</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Tungsten</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Uranium</span>
+      </div>
+      <div class="pcard-note"><strong>The single most important mineral partner the US has.</strong> The US-Australia Critical Minerals Framework (Oct 2025) commits $1B each within 6 months. Lynas (world's largest non-China REE producer) has a DoD-funded separation facility in Texas. Australia's <strong>31 listed critical minerals</strong> map almost perfectly onto US vulnerabilities. AUKUS alignment is deep. Relationship is the strongest in the network.</div>
+    </div>
+
+    <!-- Japan -->
+    <div class="pcard" style="animation-delay:0.16s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-asia);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇯🇵</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Japan</div>
+      <div class="pcard-region" style="color:var(--c-asia)">Asian Allies · Quad</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Semiconductor mfg</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Battery tech</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Precision machinery</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Specialty steel</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Robotics</span>
+      </div>
+      <div class="pcard-note">US-Japan Critical Minerals Framework signed Oct 2025. Japan's <strong>Toyota, Panasonic, and Renesas</strong> are embedded in US auto and chip supply chains. Provides irreplaceable process knowledge for battery and semiconductor manufacturing. Japan is also investing heavily in its own supply diversification — a natural co-investor in shared vulnerability reduction.</div>
+    </div>
+
+    <!-- South Korea -->
+    <div class="pcard" style="animation-delay:0.20s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-asia);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇰🇷</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">South Korea</div>
+      <div class="pcard-region" style="color:var(--c-asia)">Asian Allies</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Memory chips</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Battery cells</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Zinc smelting</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Germanium</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Shipbuilding</span>
+      </div>
+      <div class="pcard-note">Samsung and SK Hynix = world memory chip duopoly. LG Energy and Samsung SDI are top 3 global EV battery makers. <strong>Korea Zinc signed a $150M deal + $540M private investment</strong> to supply germanium to Lockheed Martin from a new Tennessee facility. Korea's shipyards are the world's most capable — a direct bridge for US naval architecture gap.</div>
+    </div>
+
+    <!-- Taiwan -->
+    <div class="pcard" style="animation-delay:0.24s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-asia);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇹🇼</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Taiwan</div>
+      <div class="pcard-region" style="color:var(--c-asia)">Asian Allies · TSMC anchor</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Advanced chips (90%+)</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Server hardware</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Notebook ODM</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Process knowledge</span>
+      </div>
+      <div class="pcard-note"><strong>Irreplaceable for the foreseeable future.</strong> Taiwan produces 90%+ of advanced chips. TSMC's $250B US investment commitment (US-Taiwan deal 2025) is the single largest reshoring event in semiconductor history. But Taiwan firms are also building in Arizona — which is both the mitigation and the vulnerability. Security of Taiwan = security of global tech.</div>
+    </div>
+
+    <!-- India -->
+    <div class="pcard" style="animation-delay:0.28s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-asia);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇮🇳</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot filled" style="background:var(--c-asia)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">India</div>
+      <div class="pcard-region" style="color:var(--c-asia)">Asian Allies · Quad</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Generic pharma APIs</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">IT/software</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Semiconductor assembly</span>
+        <span class="ctag" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">Engineering talent</span>
+      </div>
+      <div class="pcard-note">India supplies ~30% of US generic drug APIs — a massive pharmaceutical backstop. Its <strong>1.4B population and large engineering pipeline</strong> is a direct counterweight to US talent gaps. Quad membership aligns security interests. India's semiconductor ambitions (Tata, Foxconn fabs) are early-stage but directionally correct. Strategic hedger, not a pure ally — watches US reliability carefully.</div>
+    </div>
+
+    <!-- Netherlands -->
+    <div class="pcard" style="animation-delay:0.32s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-eu);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇳🇱</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Netherlands (ASML)</div>
+      <div class="pcard-region" style="color:var(--c-eu)">EU · Critical Technology Node</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">EUV lithography (100%)</span>
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Chip manufacturing tools</span>
+      </div>
+      <div class="pcard-note"><strong>ASML makes every EUV lithography machine on Earth.</strong> Without it, advanced chip manufacturing — including TSMC's Arizona fabs — is impossible. This is the single most strategically irreplaceable company in western supply chains. The Netherlands has already restricted ASML exports to China under US pressure. EU-US trade tensions (15% Turnberry tariff deal Aug 2025) are a headwind, but this relationship is too structurally critical to allow to collapse.</div>
+    </div>
+
+    <!-- Germany -->
+    <div class="pcard" style="animation-delay:0.36s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-eu);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇩🇪</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Germany</div>
+      <div class="pcard-region" style="color:var(--c-eu)">EU · Industrial Core</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Precision machinery</span>
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Specialty chemicals</span>
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Automotive tech</span>
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Industrial R&D</span>
+      </div>
+      <div class="pcard-note">BASF, Siemens, Zeiss, Thyssenkrupp — Germany's industrial ecosystem is the closest analog to what the US is trying to rebuild. <strong>Process engineering knowledge is unmatched in the West.</strong> The 50% US tariff on EU steel/aluminum is a real friction point, but Germany-US industrial ties are so deep that both sides absorb the pain rather than decouple. EU-US Critical Minerals Action Plan announced Feb 2026.</div>
+    </div>
+
+    <!-- UK -->
+    <div class="pcard" style="animation-delay:0.40s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-eu);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇬🇧</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot filled" style="background:var(--c-eu)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">United Kingdom</div>
+      <div class="pcard-region" style="color:var(--c-eu)">EU/UK · Five Eyes · AUKUS</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Defense electronics</span>
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Pharma mfg (GSK/AZ)</span>
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Aerospace</span>
+        <span class="ctag" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">Nuclear expertise</span>
+      </div>
+      <div class="pcard-note">Only nation with which Trump concluded an interim trade deal in 2025. AstraZeneca and GSK (UK-based) have committed $80B+ to US manufacturing investments. AUKUS makes UK a direct defense-industrial partner. Rolls-Royce nuclear expertise is key for small modular reactor buildout. <strong>Best-maintained EU/European relationship in the current climate.</strong></div>
+    </div>
+
+    <!-- Chile -->
+    <div class="pcard" style="animation-delay:0.44s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-latam);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇨🇱</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Chile</div>
+      <div class="pcard-region" style="color:var(--c-latam)">Latin America · Lithium Triangle</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Copper (#1 global)</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Lithium (#2 global)</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Molybdenum</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Rhenium</span>
+      </div>
+      <div class="pcard-note">Chile holds <strong>~25% of global copper reserves</strong> and 4th largest lithium. Free trade agreement with the US makes Chilean lithium IRA-eligible. Escondida alone produces ~10% of world copper. The challenge: Chile ships most copper semi-processed to China for refining. The strategic play is building US-linked refining capacity inside Chile to capture more of the value chain before China does.</div>
+    </div>
+
+    <!-- Peru -->
+    <div class="pcard" style="animation-delay:0.48s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-latam);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇵🇪</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Peru</div>
+      <div class="pcard-region" style="color:var(--c-latam)">Latin America</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Copper (#2 global)</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Silver</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Zinc</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Molybdenum</span>
+      </div>
+      <div class="pcard-note">World's #2 copper producer. Incorporated into Mineral Security Partnership dialogues. <span class="warn-tag" style="background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.25)">⚠ China is already the largest mining investor in Peru — active competition for alignment.</span> Political instability is a recurring risk. ESG compliance requirements complicate investment flows but are non-negotiable for western capital.</div>
+    </div>
+
+    <!-- Brazil -->
+    <div class="pcard" style="animation-delay:0.52s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-latam);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇧🇷</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Brazil</div>
+      <div class="pcard-region" style="color:var(--c-latam)">Latin America · Emerging Anchor</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">REE reserves (#2 global)</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Niobium (#1 global)</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Graphite</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Nickel</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Iron ore (#1 global)</span>
+      </div>
+      <div class="pcard-note">Brazil holds <strong>23% of global rare earth reserves but produces only 0.02% of global output</strong> — the single greatest untapped opportunity in the western supply network. DFC considering $465M to expand Serra Verde REE operations in Goiás. Brazil's "Lithium Valley" in Minas Gerais is an emerging hub. Strategically non-aligned but economically courtable. $325B+ in active Latin American minerals investment tracked, with Brazil + Chile = 52% of it.</div>
+    </div>
+
+    <!-- Argentina -->
+    <div class="pcard" style="animation-delay:0.56s;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-latam);"></div>
+      <div class="pcard-top">
+        <div class="pcard-flag">🇦🇷</div>
+        <div class="pcard-rel">
+          <div class="rel-label">Relationship</div>
+          <div class="rel-dots">
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot filled" style="background:var(--c-latam)"></div>
+            <div class="rel-dot" style="background:var(--bg4)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pcard-name">Argentina</div>
+      <div class="pcard-region" style="color:var(--c-latam)">Latin America · Milei pivot</div>
+      <div class="pcard-contrib">
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Lithium triangle</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Copper</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Shale gas</span>
+        <span class="ctag" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">Gold</span>
+      </div>
+      <div class="pcard-note">Under Milei, Argentina has pivoted hard toward US alignment — the RIGI investment regime (30-year fiscal stability, free currency) is explicitly designed to attract western capital over Chinese. IADB $100M loan to a $2.5B lithium project. Argentina could <strong>surpass Chile in lithium production</strong> within a decade given reserve scale. Strongest recent improvement in relationship health of any Latin American partner.</div>
+    </div>
+
+  </div><!-- end partners-grid -->
+</div>
+
+<!-- ── PANEL 2: COVERAGE MATRIX ── -->
+<div id="matrix" class="panel">
+  <div class="panel-label">For each critical reshoring need — who in the western network covers it — and what still falls short</div>
+  <div class="matrix-scroll">
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th style="width:18%">Reshoring need</th>
+        <th style="width:30%">Western network coverage</th>
+        <th style="width:12%">Coverage level</th>
+        <th>Remaining gap</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="animation-delay:0.04s">
+        <td><div class="need-name">Semiconductors (advanced)</div><div class="need-sub">Logic, memory, leading-edge</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇹🇼 TSMC — process</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇰🇷 Samsung/SK Hynix — memory</span>
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇳🇱 ASML — EUV tools</span>
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇩🇪 Zeiss — optics</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇺🇸 Intel/Micron domestic</span>
+        </div></td>
+        <td><span class="gap-badge g-partial">Partial · 10yr</span></td>
+        <td><div class="gap-text">Allied network largely covers this — but Taiwan's geographic vulnerability is the systemic risk no agreement fully resolves. Arizona TSMC fabs won't reach full advanced-node parity until ~2030.</div></td>
+      </tr>
+      <tr style="animation-delay:0.08s">
+        <td><div class="need-name">Rare earth processing</div><div class="need-sub">Separation, magnets, heavy REEs</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇦🇺 Lynas — mining + partial processing</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇺🇸 MP Materials — Mountain Pass</span>
+          <span class="cov-chip" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">🇧🇷 Serra Verde — developing</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇯🇵 Japan — processing R&D</span>
+        </div></td>
+        <td><span class="gap-badge g-critical">Critical · 15–25yr</span></td>
+        <td><div class="gap-text">Lynas + MP Materials cover light REEs adequately within 5 years. <strong>Heavy REEs (dysprosium, terbium) for defense magnets remain critically exposed</strong> — no allied source at scale yet. Brazil's Serra Verde is the best long-term bet but is years from production scale.</div></td>
+      </tr>
+      <tr style="animation-delay:0.12s">
+        <td><div class="need-name">EV & energy batteries</div><div class="need-sub">Cells, packs, cathodes, anodes</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇰🇷 LG / Samsung SDI</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇯🇵 Panasonic</span>
+          <span class="cov-chip" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">🇨🇱🇦🇷🇧🇷 Lithium triangle</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇦🇺 Lithium mining</span>
+        </div></td>
+        <td><span class="gap-badge g-partial">Partial · 8–15yr</span></td>
+        <td><div class="gap-text">Cell manufacturing is Korea/Japan-anchored and building US capacity. Raw lithium is covered by Australia + Latin America triangle. The gap is <strong>graphite anodes</strong> — still China-dominated with no credible western alternative at scale yet. Australia graphite projects are developing.</div></td>
+      </tr>
+      <tr style="animation-delay:0.16s">
+        <td><div class="need-name">Pharmaceuticals & APIs</div><div class="need-sub">Generic drugs, active ingredients</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇮🇳 India — 30% of US generic APIs</span>
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇬🇧 AstraZeneca / GSK</span>
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇩🇪 BASF / Bayer chemicals</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇨🇦 Canadian pharma mfg</span>
+        </div></td>
+        <td><span class="gap-badge g-covered">Best covered · 5–10yr</span></td>
+        <td><div class="gap-text">This is the most solvable of the critical needs within the western network. India + UK + Germany provide a credible alternative to China for most APIs. The 15% EU tariff deal includes zero/near-zero tariffs on generic pharma ingredients specifically — a deliberate policy win.</div></td>
+      </tr>
+      <tr style="animation-delay:0.20s">
+        <td><div class="need-name">Critical minerals (copper, lithium, cobalt)</div><div class="need-sub">Base metals for tech transition</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">🇨🇱 Copper + lithium</span>
+          <span class="cov-chip" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">🇵🇪 Copper #2 global</span>
+          <span class="cov-chip" style="color:var(--c-latam);border-color:rgba(46,201,126,0.3);background:var(--c-latam-dim)">🇦🇷 Lithium triangle</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇦🇺 Lithium + cobalt + nickel</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇨🇦 Nickel + cobalt</span>
+        </div></td>
+        <td><span class="gap-badge g-covered">Well covered · 5–15yr</span></td>
+        <td><div class="gap-text">Latin America + Australia together cover base metal supply comprehensively. The bottleneck is <strong>processing and refining</strong> — most raw material ships to China for processing. Investment in allied refining capacity (Chile, Australia, Texas) is the critical next step, not mining more ore.</div></td>
+      </tr>
+      <tr style="animation-delay:0.24s">
+        <td><div class="need-name">Defense electronics & magnets</div><div class="need-sub">Rare earth magnets, guidance, optics</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇰🇷 Korea Zinc — germanium</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇦🇺 Lynas — magnet REEs</span>
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇬🇧 Defense electronics (BAE)</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇺🇸 MP Materials magnets</span>
+        </div></td>
+        <td><span class="gap-badge g-partial">Partial · 10–20yr</span></td>
+        <td><div class="gap-text">Progress is real — Korea Zinc/Lockheed germanium deal is a model. MP Materials is building US magnet production. But heavy REE magnets (for F-35s, hypersonic guidance) remain partially exposed. Full allied coverage of this need requires Brazil and Australia to scale REE processing substantially.</div></td>
+      </tr>
+      <tr style="animation-delay:0.28s">
+        <td><div class="need-name">Solar panels & clean energy hardware</div><div class="need-sub">PV cells, wind components, grid hardware</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇩🇪 Siemens — wind turbines</span>
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇩🇪 SMA — inverters</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇲🇽 Mexican mfg assembly</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇯🇵 Panasonic solar cells</span>
+        </div></td>
+        <td><span class="gap-badge g-critical">Weakest · 15–25yr</span></td>
+        <td><div class="gap-text">The western network has the components but not the scale. China produces ~80% of solar wafers globally. No allied nation has comparable PV manufacturing scale. Germany and Japan have the technology; Mexico has the assembly capacity. Getting from "component capable" to "cost-competitive at scale" is a decade+ project requiring massive coordinated subsidy.</div></td>
+      </tr>
+      <tr style="animation-delay:0.32s">
+        <td><div class="need-name">Shipbuilding</div><div class="need-sub">Commercial & naval vessels</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇰🇷 Hyundai / HHI — world #1 capable yards</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇯🇵 Japanese yards</span>
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇬🇧 BAE naval systems</span>
+        </div></td>
+        <td><span class="gap-badge g-partial">Allied bridging · not full reshore</span></td>
+        <td><div class="gap-text">South Korea's shipyards are arguably the world's best — a legitimate allied bridge for both commercial and some naval tonnage. But US law (Jones Act) requires US-built ships for domestic routes — the allied solution doesn't fix that. The talent and institutional knowledge gap in the US remains. Korea can build ships; it cannot rebuild a US shipbuilding culture.</div></td>
+      </tr>
+      <tr style="animation-delay:0.36s">
+        <td><div class="need-name">Steel (specialty grades)</div><div class="need-sub">Electrical steel, specialty alloys</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇩🇪 Thyssenkrupp</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇯🇵 Nippon Steel</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇨🇦 Algoma / Stelco</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇺🇸 Nucor — domestic</span>
+        </div></td>
+        <td><span class="gap-badge g-partial">Partial · friction costs</span></td>
+        <td><div class="gap-text">Western allied network covers specialty steel well — but <strong>US 50% tariffs on EU + Canadian steel/aluminum are directly undermining this</strong>. Taxing your allies' best steel inputs is self-defeating. Electrical steel for grid transformers remains particularly tight globally.</div></td>
+      </tr>
+      <tr style="animation-delay:0.40s">
+        <td><div class="need-name">Industrial machinery & tools</div><div class="need-sub">Precision manufacturing equipment</div></td>
+        <td><div class="cov-chips">
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇩🇪 Siemens / Trumpf / Zeiss</span>
+          <span class="cov-chip" style="color:var(--c-asia);border-color:rgba(245,166,35,0.3);background:var(--c-asia-dim)">🇯🇵 Fanuc / Mazak / Keyence</span>
+          <span class="cov-chip" style="color:var(--c-na);border-color:rgba(59,158,255,0.3);background:var(--c-na-dim)">🇨🇦 Canadian industrial</span>
+          <span class="cov-chip" style="color:var(--c-eu);border-color:rgba(167,139,250,0.3);background:var(--c-eu-dim)">🇬🇧 Renishaw precision</span>
+        </div></td>
+        <td><span class="gap-badge g-covered">Well covered · near-term</span></td>
+        <td><div class="gap-text">Germany and Japan between them manufacture the world's best precision industrial equipment. This need is well-covered by the allied network. The US doesn't need to reshore machinery manufacturing — it needs to maintain frictionless access to German and Japanese equipment, which current tariff policy actively threatens.</div></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ── PANEL 3: RELATIONSHIP HEALTH ── -->
+<div id="health" class="panel">
+  <div class="panel-label">Current state of each bilateral relationship — damage assessment and repair potential</div>
+  <div class="rel-grid">
+
+    <div class="rel-card" style="animation-delay:0.04s; border-color:rgba(46,201,126,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇦🇺 Australia</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(46,201,126,0.1);color:var(--green);border:1px solid rgba(46,201,126,0.2)">Strong · Active</span>
+      <div class="rel-card-note">US-Australia Critical Minerals Framework (Oct 2025), $1B each committed. AUKUS defense integration deepening. <strong>Strongest minerals partnership in the network.</strong> Minor friction over tariffs but security alignment overwhelms it.</div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.08s; border-color:rgba(46,201,126,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇯🇵 Japan</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(46,201,126,0.1);color:var(--green);border:1px solid rgba(46,201,126,0.2)">Strong · Active</span>
+      <div class="rel-card-note">US-Japan Critical Minerals Framework signed. Japan is a quiet anchor of the entire western tech supply chain. <strong>Watching US reliability carefully</strong> given North Korean/China threat environment — currently sees US alignment as existential necessity.</div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.12s; border-color:rgba(46,201,126,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇰🇷 South Korea</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(46,201,126,0.1);color:var(--green);border:1px solid rgba(46,201,126,0.2)">Strong · Investing in US</span>
+      <div class="rel-card-note">Korea Zinc $150M investment + $540M private match in Tennessee. Samsung building in Texas. LG Energy in Michigan. <strong>Korea is putting money in the US while the US is threatening tariffs on everyone else</strong> — a credibility win the relationship needs to protect.</div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.16s; border-color:rgba(46,201,126,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇹🇼 Taiwan</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(46,201,126,0.1);color:var(--green);border:1px solid rgba(46,201,126,0.2)">Deepest tech tie · Existential stakes</span>
+      <div class="rel-card-note">TSMC $250B US investment commitment. US-Taiwan trade deal announced. Taiwan's survival depends on US commitment — creating maximum alignment incentive. <strong>This is the most strategically loaded relationship in the entire network.</strong></div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.20s; border-color:rgba(245,166,35,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇨🇦 Canada</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.25)">Strained · Repairable</span>
+      <div class="rel-card-note">25% tariffs + annexation rhetoric have done real damage to Canadian public opinion and government trust. USMCA integration means both economies absorb the pain regardless. <strong>Canada is too embedded to decouple but is actively exploring EU and Asian trade diversification as insurance.</strong></div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.24s; border-color:rgba(245,166,35,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇲🇽 Mexico</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.25)">Complex · Active framework</span>
+      <div class="rel-card-note">Feb 2026 USTR Critical Minerals Action Plan is a positive signal. Taiwan manufacturing investment in Mexico is huge. But <strong>tariff threats, immigration rhetoric, and fentanyl framing</strong> create political friction that makes long-term investment commitment harder for both sides.</div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.28s; border-color:rgba(245,166,35,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇪🇺 European Union</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.25)">Damaged · Functionally intact</span>
+      <div class="rel-card-note">The "Turnberry" deal (Aug 2025) capped most EU tariffs at 15% — a de-escalation that avoided the worst. <strong>50% tariffs on EU steel/aluminum/copper remain</strong> — a real friction. EU-US Critical Minerals Action Plan announced Feb 2026. The relationship is cooler but the structural interdependence ($4.2B/day in trade) keeps it functional.</div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.32s; border-color:rgba(46,201,126,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇬🇧 United Kingdom</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(46,201,126,0.1);color:var(--green);border:1px solid rgba(46,201,126,0.2)">Best EU/UK relationship · Interim deal</span>
+      <div class="rel-card-note">Only European nation with a concluded Trump-era trade deal. AUKUS partner. AZ/GSK $80B+ US manufacturing investment. <strong>Proves the transatlantic relationship can still produce concrete outcomes when both sides want it to.</strong></div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.36s; border-color:rgba(46,201,126,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇦🇷 Argentina</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot" style="background:var(--green)"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(46,201,126,0.1);color:var(--green);border:1px solid rgba(46,201,126,0.2)">Most improved · Milei pivot</span>
+      <div class="rel-card-note">Under Milei, Argentina has made the sharpest pro-US alignment turn in the hemisphere. RIGI investment framework is explicitly designed to attract western capital. <strong>Best window in decades</strong> to lock in lithium supply agreements. US financial support (IADB, DFC) is flowing. Needs to be locked in before next election cycle.</div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.40s; border-color:rgba(245,166,35,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇧🇷 Brazil</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.25)">Strategic non-aligned · Courtable</span>
+      <div class="rel-card-note">Brazil is the biggest prize in the western network that remains uncommitted. 23% of global REE reserves, barely producing. <strong>DFC investment signals are positive</strong> but Brazil's Lula government maintains strategic non-alignment and sells to whoever pays. Needs sustained economic engagement, not confrontation.</div>
+    </div>
+
+    <div class="rel-card" style="animation-delay:0.44s; border-color:rgba(245,166,35,0.25);">
+      <div class="rel-card-header">
+        <div class="rel-card-name">🇮🇳 India</div>
+        <div class="rel-score-wrap">
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot" style="background:var(--amber)"></div>
+          <div class="rel-score-dot"></div>
+          <div class="rel-score-dot"></div>
+        </div>
+      </div>
+      <span class="rel-card-status" style="background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.25)">Quad aligned · Strategic hedger</span>
+      <div class="rel-card-note">India supplies ~30% of US generic drug APIs — already a critical partner whether acknowledged or not. Quad membership creates defense alignment. But India will not be a pure ally — <strong>it maintains Russian arms relationships and independent trade with China.</strong> Treat as a critical functional partner, not a full ally.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PANEL 4: REMAINING GAPS ── -->
+<div id="gaps" class="panel">
+  <div class="panel-label">What the western network still cannot cover — even with full allied cooperation</div>
+
+  <div class="remains-grid">
+    <div class="remain-card" style="animation-delay:0.04s">
+      <div class="remain-card-title">Heavy rare earth processing at scale</div>
+      <div class="remain-card-body">Dysprosium and terbium — critical for defense magnets, EV motors, and wind turbines — have <strong>no western source at production scale</strong>. Australia and Brazil have the deposits. China has 20+ years of processing knowledge lead. Even with maximum investment, heavy REE independence is a 15–20 year project and requires building institutional knowledge from near-zero.</div>
+    </div>
+    <div class="remain-card" style="animation-delay:0.08s">
+      <div class="remain-card-title">Battery-grade graphite anodes</div>
+      <div class="remain-card-body">China processes ~85% of battery-grade graphite globally. Australia has developing graphite projects. There is <strong>no credible western alternative at EV-scale within 5 years</strong>. This is the most dangerous hidden gap in the battery supply chain — less discussed than lithium but equally critical and harder to replace.</div>
+    </div>
+    <div class="remain-card" style="animation-delay:0.12s">
+      <div class="remain-card-title">Solar PV manufacturing at scale</div>
+      <div class="remain-card-body">China produces ~80% of global solar wafers. No western nation — alone or collectively — has comparable manufacturing scale or cost structure. Germany and Japan have the technology; <strong>no one has the gigafactory infrastructure</strong>. A coordinated US-EU-Japan solar manufacturing initiative is theoretically possible but would require 15+ years and massive coordinated subsidy to achieve price competitiveness.</div>
+    </div>
+    <div class="remain-card" style="animation-delay:0.16s">
+      <div class="remain-card-title">Mineral refining & processing capacity</div>
+      <div class="remain-card-body">Latin America has the ore. Australia has the ore. The bottleneck is <strong>processing and refining</strong> — and most of it still flows to China because China built the world's refining infrastructure when no one else invested. Building allied refining capacity in Chile, Texas, and Australia is the single highest-leverage investment the western network can make — but it requires 10–15 years and sustained capital.</div>
+    </div>
+    <div class="remain-card" style="animation-delay:0.20s">
+      <div class="remain-card-title">US domestic shipbuilding</div>
+      <div class="remain-card-body">South Korea can bridge commercial shipbuilding. It cannot fix US Jones Act requirements or rebuild US shipbuilding institutional knowledge. This gap is <strong>not solvable through allied cooperation alone</strong> — it requires domestic investment in yards, workforce, and the kind of sustained industrial policy the US has not demonstrated capacity for. A 25–40 year project.</div>
+    </div>
+    <div class="remain-card" style="animation-delay:0.24s">
+      <div class="remain-card-title">Talent for industrial R&D</div>
+      <div class="remain-card-body">The allied network solves supply chain and materials gaps. It does <strong>not solve the US workforce pipeline problem</strong>. No amount of allied cooperation generates the rare earth process engineers, mining engineers, and materials scientists the US needs domestically. That requires K–12 investment, maintained immigration policy, and salary parity with tech — all domestic policy problems no trade deal can fix.</div>
+    </div>
+    <div class="remain-card" style="animation-delay:0.28s">
+      <div class="remain-card-title">Policy consistency across election cycles</div>
+      <div class="remain-card-body">Every partner in this network is watching US reliability. Australia, Japan, Chile, and Argentina have made real commitments based on an assumption of sustained US engagement. <strong>If the US reverses course on allied cooperation with the next administration change, these partners will hedge toward China</strong> — and the window to rebuild the aligned supply web will close, possibly permanently, as China deepens its processing dominance.</div>
+    </div>
+    <div class="remain-card" style="animation-delay:0.32s">
+      <div class="remain-card-title">Latin American refining sovereignty</div>
+      <div class="remain-card-body">Chile ships raw copper to China for refining. Brazil's REEs are barely extracted. Peru sells to whoever pays. <strong>Chinese capital already dominates Latin American mining investment</strong> in Peru and Bolivia. The window to re-route value chains toward western refiners is open — but requires the US to offer a credible economic alternative that's more attractive than Chinese capital with fewer conditions attached.</div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-eye">// The honest bottom line — what partial deglobalization through the western network actually achieves</div>
+    <div class="verdict-text">
+      If the US pursues <strong>coordinated partial deglobalization through the western-aligned network</strong> — rather than unilateral autarky — the outlook changes dramatically. <em>Pharmaceuticals are solvable within a decade.</em> <em>Battery supply chains are solvable within 15 years.</em> <em>Semiconductor independence, with Taiwan as anchor and Korea/Japan as co-investors, is achievable within 20 years.</em> <em>Base metal supply from Latin America + Australia is already largely secured.</em>
+      <br><br>
+      What remains genuinely hard even with full allied cooperation: <em>heavy rare earth processing, graphite, solar scale, and shipbuilding.</em> These are 20–40 year projects regardless of approach.
+      <br><br>
+      The math is clear: <strong>the allied network approach compresses a 30–40 year solo reshoring timeline into 10–20 years for most critical needs, at a fraction of the environmental and economic cost.</strong> The obstacles are not technical or geological. They are political — specifically, the US capacity to sustain cooperative, non-combative relationships with its partners across multiple election cycles. That has been the variable all along. It still is.
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-l">
+    Sources: CSIS · ODI Critical Minerals Report 2026 · US State Dept 2026 Critical Minerals Ministerial ·<br>
+    US-Australia Critical Minerals Framework · USGS Mineral Commodity Summaries 2025–26 ·<br>
+    CEPAL Latin America Minerals Report · PIIE US-China Trade Analysis · EU-US Turnberry Deal 2025
+  </div>
+  <div class="footer-r">
+    Generated via Claude (Anthropic) · April 2026<br>
+    For policy discussion and educational purposes
+  </div>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+<style>
+.rsn{position:fixed;bottom:0;left:0;right:0;height:50px;background:rgba(4,4,6,0.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,0.09);display:flex;align-items:center;padding:0 22px;z-index:9999;gap:10px;font-family:"JetBrains Mono","Fira Code","IBM Plex Mono",monospace;}
+.rsn *{box-sizing:border-box;}
+.rsn a{text-decoration:none;transition:opacity 0.15s;}
+.rsn a:hover{opacity:0.55;}
+.rsn-left,.rsn-right{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+.rsn-right{justify-content:flex-end;}
+.rsn-home{font-size:17px;color:rgba(255,255,255,0.28);flex-shrink:0;}
+.rsn-arr{font-size: 17px;color:rgba(255,255,255,0.28);flex-shrink:0;}
+.rsn-lbl{font-size:10px;color:rgba(255,255,255,0.36);letter-spacing:0.07em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rsn-mid{display:flex;align-items:center;gap:9px;flex-shrink:0;position:relative;padding-top:4px;}
+.rsn-series{font-size:8px;color:rgba(255,255,255,0.15);letter-spacing:0.2em;text-transform:uppercase;position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none;}
+.rsn-d{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.16);display:block;transition:background 0.2s,transform 0.2s;flex-shrink:0;}
+.rsn-d:hover{background:rgba(255,255,255,0.5)!important;}
+.rsn-d.on{background:#fff!important;transform:scale(1.5);}
+</style>
+
+<div style="height:58px"></div>
+<nav class="rsn" aria-label="Series navigation">
+  <a href="index.html" class="rsn-home" title="Series home">&#8962;</a>
+  <div class="rsn-left"><a href="china_rd_workforce.html" class="rsn-arr">&#8592;</a><a href="china_rd_workforce.html" class="rsn-lbl">China R&D Workforce</a></div>
+  <div class="rsn-mid">
+    <span class="rsn-series">The Reshoring Reality</span>
+    <a href="us_rd_workforce_dashboard.html" class="rsn-d" title="1 · U.S. R&D Workforce"></a><a href="china_rd_workforce.html" class="rsn-d" title="2 · China R&D Workforce"></a><a href="allied_network_dashboard.html" class="rsn-d on" title="3 · Allied Supply Web"></a><a href="reshoring_decisions.html" class="rsn-d" title="4 · Reshoring Decisions"></a><a href="reshoring_executive_summary.html" class="rsn-d" title="5 · Executive Summary"></a><a href="alabama_reshoring.html" class="rsn-d" title="6 · Alabama's Moment"></a>
+  </div>
+  <div class="rsn-right"><a href="reshoring_decisions.html" class="rsn-lbl">Reshoring Decisions</a><a href="reshoring_decisions.html" class="rsn-arr">&#8594;</a></div>
+</nav>
+</body>
+</html>
